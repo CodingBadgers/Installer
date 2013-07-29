@@ -14,22 +14,24 @@ repositories {
     }
 }
 
-group = 'net.minecraftforge'
-archivesBaseName = 'forge-installer'
+group = 'uk.thecodingbadgers'
+archivesBaseName = 'adminpack-installer'
 version = '1.0'
-targetCompatibility = '1.6'
-sourceCompatibility = '1.6'
+targetCompatibility = '1.7'
+sourceCompatibility = '1.7'
 
 dependencies {
     compile 'net.sf.jopt-simple:jopt-simple:4.5'
     compile 'net.sourceforge.argo:argo:3.7'
     compile 'com.google.guava:guava:14.0'
+    compile 'commons-io:commons-io:2.4'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
     from sourceSets.main.allSource
 }
+
 artifacts {
     archives jar
     archives sourcesJar
@@ -38,8 +40,8 @@ artifacts {
 jar {
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     manifest { attributes 'Main-Class': 'cpw.mods.fml.installer.SimpleInstaller' }
-
 }
+
 uploadArchives {
     repositories {
         if (rootProject.repositories.contains('filesrepo')) {

@@ -1,15 +1,8 @@
 package cpw.mods.fml.installer;
 
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Dialog.ModalExclusionType;
-import java.awt.Dialog.ModalityType;
 import java.awt.Frame;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +16,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -33,6 +25,7 @@ import javax.swing.border.LineBorder;
 
 import com.google.common.base.Throwables;
 
+@SuppressWarnings("serial")
 public class InstallerPanel extends JPanel {
     private File targetDir;
     private ButtonGroup choiceButtonGroup;
@@ -41,7 +34,7 @@ public class InstallerPanel extends JPanel {
     private JDialog dialog;
     private JPanel fileEntryPanel;
 
-    private class FileSelectAction extends AbstractAction
+	private class FileSelectAction extends AbstractAction
     {
         @Override
         public void actionPerformed(ActionEvent e)

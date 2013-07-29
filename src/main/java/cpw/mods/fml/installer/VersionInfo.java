@@ -5,13 +5,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Arrays;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import argo.jdom.JdomParser;
 import argo.jdom.JsonNode;
 import argo.jdom.JsonRootNode;
 
-import com.google.common.base.CharMatcher;
 import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.base.Throwables;
@@ -82,15 +84,26 @@ public class VersionInfo {
     {
         return INSTANCE.versionData.getNode("versionInfo");
     }
+    
+    public static URL getForgeDownloadUrl() {
+    	try {
+			return new URL(INSTANCE.versionData.getStringValue("install", "forgeUrl").replace("${forge_version}", INSTANCE.versionData.getStringValue("install", "forgeVersion")));
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			return null;
+		}
+    }
 
     public static File getMinecraftFile(File path)
     {
         return new File(new File(path, getMinecraftVersion()),getMinecraftVersion()+".jar");
     }
+    
     public static String getContainedFile()
     {
         return INSTANCE.versionData.getStringValue("install","filePath");
     }
+    
     public static void extractFile(File path) throws IOException
     {
         INSTANCE.doFileExtract(path);
@@ -105,6 +118,19 @@ public class VersionInfo {
 
     public static String getMinecraftVersion()
     {
-        return INSTANCE.versionData.getStringValue("install","minecraft");
+        return INSTANCE.versionData.getStringValue("install","minecraftVersion");
+    }
+    
+    public static List<ModInfo> getModInfo() 
+    {
+    	List<ModInfo> modData = new ArrayList<ModInfo>();  	
+    	List<JsonNode> mods = INSTANCE.versionData.getArrayNode("mods");
+    	
+    	for (JsonNode mod : mods) {
+    		ModInfo modInfo = new ModInfo(mod);
+    		modData.add(modInfo);
+    	}
+    	
+    	return modData;
     }
 }

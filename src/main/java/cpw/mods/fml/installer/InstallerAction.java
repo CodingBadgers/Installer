@@ -2,10 +2,7 @@ package cpw.mods.fml.installer;
 
 import java.io.File;
 
-import javax.swing.Icon;
-
 import com.google.common.base.Throwables;
-import com.google.common.reflect.Reflection;
 
 public enum InstallerAction {
     CLIENT("Install client", "Install a new profile to the Mojang client launcher", ClientInstall.class),
