@@ -20,13 +20,11 @@ public class SimpleInstaller {
     public static void main(String[] args) throws IOException
     {
         OptionParser parser = new OptionParser();
-        OptionSpecBuilder serverInstallOption = parser.accepts("installServer", "Install a server to the current directory");
-        OptionSpecBuilder extractOption = parser.accepts("extract", "Extract the contained jar file");
         OptionSpecBuilder helpOption = parser.acceptsAll(Arrays.asList("h", "help"),"Help with this installer");
         OptionSet optionSet = parser.parse(args);
         if (optionSet.specs().size()>0)
         {
-            handleOptions(parser, optionSet, serverInstallOption, extractOption, helpOption);
+            handleOptions(parser, optionSet, helpOption);
         }
         else
         {
@@ -34,58 +32,9 @@ public class SimpleInstaller {
         }
     }
 
-    private static void handleOptions(OptionParser parser, OptionSet optionSet, OptionSpecBuilder serverInstallOption, OptionSpecBuilder extractOption, OptionSpecBuilder helpOption) throws IOException
+    private static void handleOptions(OptionParser parser, OptionSet optionSet, OptionSpecBuilder helpOption) throws IOException
     {
-        if (optionSet.has(serverInstallOption))
-        {
-            try
-            {
-                VersionInfo.getVersionTarget();
-                ServerInstall.headless = true;
-                System.out.println("Installing server to current directory");
-                if (!InstallerAction.SERVER.run(new File(".")))
-                {
-                    System.err.println("There was an error during server installation");
-                    System.exit(1);
-                }
-                else
-                {
-                    System.out.println("The server installed successfully, you should now be able to run the file "+VersionInfo.getContainedFile());
-                    System.out.println("You can delete this installer file now if you wish");
-                }
-                System.exit(0);
-            }
-            catch (Throwable e)
-            {
-                System.err.println("A problem installing the server was detected, server install cannot continue");
-                System.exit(1);
-            }
-        }
-        else if (optionSet.has(extractOption))
-        {
-            try
-            {
-                VersionInfo.getVersionTarget();
-                if (!InstallerAction.EXTRACT.run(new File(".")))
-                {
-                    System.err.println("A problem occurred extracting the file to "+VersionInfo.getContainedFile());
-                    System.exit(1);
-                }
-                else
-                {
-                    System.out.println("File extracted successfully to "+VersionInfo.getContainedFile());
-                    System.out.println("You can delete this installer file now if you wish");
-                }
-                System.exit(0);
-            }
-            catch (Throwable e)
-            {
-                System.err.println("A problem extracting the file was detected, extraction failed");
-                System.exit(1);
-            }
-        }
-        else
-        {
+        if (optionSet.has(helpOption)) {
             parser.printHelpOn(System.err);
         }
     }

@@ -101,23 +101,57 @@ public class ClientInstall implements ActionType {
 
         try
         {
+            
+            List<ModInfo> mods = VersionInfo.getModInfo();
+            File modsFolder = new File(target, "mods");
+            
+            if (!modsFolder.exists()) {
+            	modsFolder.mkdir();
+            } else {
+            	File[] existingFiles = modsFolder.listFiles(new FileFilter() {
+    				@Override
+    				public boolean accept(File file) {
+    					return file.isFile();
+    				}
+            	});
+            	
+            	for (File file : existingFiles) {
+            		if (!file.delete()) {
+            			JOptionPane.showMessageDialog(null, "Error deleting file " + file.getName() + " from your mods folder please delete this file, this may affect your minecraft stability.", "Error", JOptionPane.ERROR_MESSAGE);
+            	        continue;
+            		}
+            	}
+            }
+            
+            // Download accompanying mods
+            List<DownloadFile> downloads = new ArrayList<>();
+            
+            ProgressMonitor monitor = new ProgressMonitor(null, "Downloading libraries", "Libraries are being analyzed", 0, 1);
+            monitor.setMillisToPopup(0);
+            monitor.setMillisToDecideToPopup(0);
+            monitor.setNote("Setting up download");
+            int totalCount = 0;
+            
+            if (!targetLibraryFile.exists()) {
+	            DownloadFile download = new DownloadFile(VersionInfo.getForgeDownloadUrl(), targetLibraryFile);
+	            totalCount = download.getFileSize();
+	            downloads.add(download);
+            }
+            
+            for (ModInfo mod : mods) {
+            	DownloadFile download = mod.downloadMod(modsFolder, monitor);
+            	totalCount += download.getFileSize();
+            	downloads.add(download);
+            }
+            
+            monitor.setMaximum(totalCount);
+            int count = 0;
+            
+            for (DownloadFile download : downloads) {
+            	count = download.run(monitor, count);
+            }
         	
-        	if (!targetLibraryFile.exists()) {
-	        	DownloadFile download = new DownloadFile(VersionInfo.getForgeDownloadUrl(), targetLibraryFile);
-	        	
-	        	ProgressMonitor monitor = new ProgressMonitor(null, "Downloading libraries", "Libraries are being analyzed", 0, 1);
-	            monitor.setMillisToPopup(0);
-	            monitor.setMillisToDecideToPopup(0);
-	            
-	        	download.run(monitor, 0);
-        	}
-            //VersionInfo.extractFile(targetLibraryFile);
         }
-        /*catch (IOException e)
-        {
-            JOptionPane.showMessageDialog(null, "There was a problem writing the system library file", "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }*/
         catch (Exception e) 
         {
         	e.printStackTrace();
@@ -142,14 +176,11 @@ public class ClientInstall implements ActionType {
             throw Throwables.propagate(e);
         }
         
-        // TODO add option of choosing which auth account to use
-        String playerId = jsonProfileData.getNode("authenticationDatabase").getFieldList().get(0).getValue().getStringValue("uuid");
-        
         JsonField[] fields = new JsonField[] {
             field("name", string(VersionInfo.getProfileName())),
             field("lastVersionId", string(VersionInfo.getVersionTarget())),
             field("launcherVisibilityOnGameClose", string("keep the launcher open")),
-            field("playerUUID", string(playerId)),
+            field("playerUUID", string(ProfileInfo.getCurrent().getUUID())),
             field("javaArgs", string("-Xmx1G -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true")),
         };
 
@@ -175,48 +206,6 @@ public class ClientInstall implements ActionType {
             return false;
         }
         
-        List<ModInfo> mods = VersionInfo.getModInfo();
-        File modsFolder = new File(target, "mods");
-        
-        if (!modsFolder.exists()) {
-        	modsFolder.mkdir();
-        } else {
-        	File[] existingFiles = modsFolder.listFiles(new FileFilter() {
-				@Override
-				public boolean accept(File file) {
-					return file.isFile();
-				}
-        	});
-        	
-        	for (File file : existingFiles) {
-        		if (!file.delete()) {
-        			JOptionPane.showMessageDialog(null, "Error deleting file " + file.getName() + " from your mods folder please delete this file, this may affect your minecraft stability.", "Error", JOptionPane.ERROR_MESSAGE);
-        	        continue;
-        		}
-        	}
-        }
-        
-        List<DownloadFile> downloads = new ArrayList<>();
-        
-        ProgressMonitor monitor = new ProgressMonitor(null, "Downloading libraries", "Libraries are being analyzed", 0, 1);
-        monitor.setMillisToPopup(0);
-        monitor.setMillisToDecideToPopup(0);
-        monitor.setNote("Setting up download");
-        int totalCount = 0;
-        
-        for (ModInfo mod : mods) {
-        	DownloadFile download = mod.downloadMod(modsFolder, monitor);
-        	totalCount += download.getFileSize();
-        	downloads.add(download);
-        }
-        
-        monitor.setMaximum(totalCount);
-        int count = 0;
-        
-        for (DownloadFile download : downloads) {
-        	count += download.run(monitor, count);
-        }
-
         return true;
     }
 
