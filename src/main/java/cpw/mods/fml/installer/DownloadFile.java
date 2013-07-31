@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
+import javax.swing.JOptionPane;
 import javax.swing.ProgressMonitor;
 
 import org.apache.commons.io.IOUtils;
@@ -22,6 +23,8 @@ public class DownloadFile {
 	private InputStream in;
 	private OutputStream out;
 	private int fileSize;
+	
+	private boolean siteActive;
 
 	public DownloadFile(URL filelocation, File destination) {
 		this.url = filelocation;
@@ -36,8 +39,11 @@ public class DownloadFile {
 			
 			in = new BufferedInputStream(connection.getInputStream());
 			out = new FileOutputStream(dest);
+			siteActive = true;
 		} catch (IOException e) {
 			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "There was a error connecting to the download site " + url + ", skipping download", "Error", JOptionPane.WARNING_MESSAGE);
+			siteActive = false;
 		}
 	}
 	
@@ -46,6 +52,11 @@ public class DownloadFile {
 	}
 	
 	public int run(ProgressMonitor monitor, int current) {
+		if (!siteActive) {
+			System.out.println("Skipping download of " + url + " try again later");
+			return current;
+		}
+		
 		int totalcount = current;
 		monitor.setNote("Downloading " + dest.getName());
     	try {

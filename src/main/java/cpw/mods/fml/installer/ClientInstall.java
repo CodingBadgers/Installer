@@ -126,20 +126,23 @@ public class ClientInstall implements ActionType {
             // Download accompanying mods
             List<DownloadFile> downloads = new ArrayList<>();
             
-            ProgressMonitor monitor = new ProgressMonitor(null, "Downloading libraries", "Libraries are being analyzed", 0, 1);
+            ProgressMonitor monitor = new ProgressMonitor(null, "Downloading libraries", "Gathering mod information", 0, 1);
             monitor.setMillisToPopup(0);
             monitor.setMillisToDecideToPopup(0);
-            monitor.setNote("Setting up download");
             int totalCount = 0;
             
             if (!targetLibraryFile.exists()) {
 	            DownloadFile download = new DownloadFile(VersionInfo.getForgeDownloadUrl(), targetLibraryFile);
 	            totalCount = download.getFileSize();
 	            downloads.add(download);
+            } else {
+            	totalCount = 1;
             }
             
+            monitor.setMaximum(totalCount);
+            
             for (ModInfo mod : mods) {
-            	DownloadFile download = mod.downloadMod(modsFolder, monitor);
+            	DownloadFile download = mod.createDownload(modsFolder, monitor);
             	totalCount += download.getFileSize();
             	downloads.add(download);
             }
@@ -150,6 +153,8 @@ public class ClientInstall implements ActionType {
             for (DownloadFile download : downloads) {
             	count = download.run(monitor, count);
             }
+            
+            monitor.setProgress(monitor.getMaximum());
         	
         }
         catch (Exception e) 

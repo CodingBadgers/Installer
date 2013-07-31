@@ -14,12 +14,14 @@ public class ModInfo {
 	public String modName;
 	public String modVersion;
 	public URL modDownload;
+	public String filename;
 	
 	public ModInfo(JsonNode mod) {
 		try {
 			modName = mod.getStringValue("name");
 			modVersion = mod.getStringValue("version");
 			modDownload = new URL(mod.getStringValue("url"));
+			filename = mod.getStringValue("filename");
 		} catch (Exception e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, "There was a error reading the mod information", "Error", JOptionPane.ERROR_MESSAGE);
@@ -38,8 +40,12 @@ public class ModInfo {
 	public URL getModDownload() {
 		return modDownload;
 	}
+
+	private String getModFileName() {
+		return filename;
+	}
 	
-	public DownloadFile downloadMod(File dir, ProgressMonitor monitor) {
+	public DownloadFile createDownload(File dir, ProgressMonitor monitor) {
 		File target = new File(dir, getModFileName());
 		
 		try {
@@ -56,10 +62,5 @@ public class ModInfo {
 		}
 		
 		return new DownloadFile(modDownload, target);
-	}
-
-	private String getModFileName() {
-		String extention = modDownload.getFile().substring(modDownload.getFile().lastIndexOf('.') + 1);
-		return modName + "-" + modVersion + "." + extention;
 	}
 }
