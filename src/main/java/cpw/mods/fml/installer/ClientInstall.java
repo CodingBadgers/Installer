@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -180,9 +181,13 @@ public class ClientInstall implements ActionType {
             field("name", string(VersionInfo.getProfileName())),
             field("lastVersionId", string(VersionInfo.getVersionTarget())),
             field("launcherVisibilityOnGameClose", string("keep the launcher open")),
-            field("playerUUID", string(ProfileInfo.getCurrent().getUUID())),
             field("javaArgs", string("-Xmx1G -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true")),
         };
+        
+        if (ProfileInfo.getCurrent() != null) {
+        	fields = Arrays.copyOf(fields, 5);
+        	fields[4] = field("playerUUID", string(ProfileInfo.getCurrent().getUUID()));
+        }
 
         HashMap<JsonStringNode, JsonNode> profileCopy = Maps.newHashMap(jsonProfileData.getNode("profiles").getFields());
         HashMap<JsonStringNode, JsonNode> rootCopy = Maps.newHashMap(jsonProfileData.getFields());
@@ -202,6 +207,7 @@ public class ClientInstall implements ActionType {
         }
         catch (Exception e)
         {
+        	e.printStackTrace();
             JOptionPane.showMessageDialog(null, "There was a problem writing the launch profile,  is it write protected?", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
