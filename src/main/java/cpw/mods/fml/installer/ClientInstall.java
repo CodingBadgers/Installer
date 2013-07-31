@@ -71,7 +71,6 @@ public class ClientInstall implements ActionType {
             return false;
         }
         File targetLibraryFile = VersionInfo.getLibraryPath(new File(target,"libraries"));
-        System.out.println(targetLibraryFile);
         if (!targetLibraryFile.getParentFile().mkdirs() && !targetLibraryFile.getParentFile().isDirectory())
         {
             if (!targetLibraryFile.getParentFile().delete())

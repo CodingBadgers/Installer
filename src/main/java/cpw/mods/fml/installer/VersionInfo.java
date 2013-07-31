@@ -36,11 +36,7 @@ public class VersionInfo {
 
 	public VersionInfo() {
 		try {
-			URL url = new URL("http://mcbadgercraft.com/adminpack/");
-		
-			//InputStream installProfile = getClass().getResourceAsStream("/install_profile.json");
-
-			versionData = parseStream(url.openStream());
+			versionData = parseStream(SimpleInstaller.profileFileLocation.openStream());
 		} catch (Exception e) {
 			throw Throwables.propagate(e);
 		}
