@@ -1,4 +1,4 @@
-package cpw.mods.fml.installer;
+package cpw.mods.fml.installer.mods;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,21 +7,27 @@ import java.net.URL;
 import javax.swing.JOptionPane;
 import javax.swing.ProgressMonitor;
 
+import cpw.mods.fml.installer.DownloadFile;
+
 import argo.jdom.JsonNode;
 
 public class ModInfo {
 
-	public String modName;
-	public String modVersion;
-	public URL modDownload;
-	public String filename;
+	private String modName;
+	private String modVersion;
+	private String modArtifactId;
+	private URL modDownload;
+	private FileType filetype;
+	private InstallMethod installMethod;
 	
 	public ModInfo(JsonNode mod) {
 		try {
 			modName = mod.getStringValue("name");
 			modVersion = mod.getStringValue("version");
+			modArtifactId = mod.getStringValue("artifactId");
 			modDownload = new URL(mod.getStringValue("url"));
-			filename = mod.getStringValue("filename");
+			filetype = FileType.valueOf(mod.getStringValue("filetype"));
+			installMethod = InstallMethod.valueOf(mod.getStringValue("installMethod"));
 		} catch (Exception e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, "There was a error reading the mod information", "Error", JOptionPane.ERROR_MESSAGE);
@@ -37,16 +43,20 @@ public class ModInfo {
 		return modVersion;
 	}
 	
+	public String getModArtifactId() {
+		return modArtifactId;
+	}
+	
 	public URL getModDownload() {
 		return modDownload;
 	}
 
-	private String getModFileName() {
-		return filename;
+	public String getModFileName() {
+		return filetype.createFileName(this);
 	}
 	
-	public DownloadFile createDownload(File dir, ProgressMonitor monitor) {
-		File target = new File(dir, getModFileName());
+	public DownloadFile createDownload(File dir, ProgressMonitor monitor) throws ReflectiveOperationException {
+		File target = installMethod.getInstaller(this).getDownload(dir);
 		
 		try {
 			if (target.exists()) {
@@ -57,6 +67,7 @@ public class ModInfo {
 			}		
 			target.createNewFile();
 		} catch (IOException e) {
+			System.err.println("Error creating download for " + getModArtifactId());
 			e.printStackTrace();
 			return null;
 		}

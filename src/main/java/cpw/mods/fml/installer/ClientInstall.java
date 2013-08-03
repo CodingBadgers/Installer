@@ -26,6 +26,8 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 
+import cpw.mods.fml.installer.mods.ModInfo;
+
 public class ClientInstall implements ActionType {
 
     @Override
@@ -129,22 +131,26 @@ public class ClientInstall implements ActionType {
             ProgressMonitor monitor = new ProgressMonitor(null, "Downloading libraries", "Gathering mod information", 0, 1);
             monitor.setMillisToPopup(0);
             monitor.setMillisToDecideToPopup(0);
+            monitor.setMaximum(mods.size() + 2);
             int totalCount = 0;
             
             if (!targetLibraryFile.exists()) {
 	            DownloadFile download = new DownloadFile(VersionInfo.getForgeDownloadUrl(), targetLibraryFile);
 	            totalCount = download.getFileSize();
 	            downloads.add(download);
+	            monitor.setProgress(1);
             } else {
             	totalCount = 1;
             }
             
             monitor.setMaximum(totalCount);
+            int i = 1;
             
             for (ModInfo mod : mods) {
-            	DownloadFile download = mod.createDownload(modsFolder, monitor);
+            	DownloadFile download = mod.createDownload(target, monitor);
             	totalCount += download.getFileSize();
             	downloads.add(download);
+	            monitor.setProgress(i++);	            
             }
             
             monitor.setMaximum(totalCount);

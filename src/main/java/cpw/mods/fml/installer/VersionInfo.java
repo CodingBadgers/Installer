@@ -28,7 +28,10 @@ import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 import com.google.common.io.OutputSupplier;
 
+import cpw.mods.fml.installer.mods.ModInfo;
+
 public class VersionInfo {
+	public static final int VERSION = 2;
 	public static final VersionInfo INSTANCE = new VersionInfo();
 	private static String forgeVersion;
 	private static String minecraftVersion;
@@ -37,6 +40,16 @@ public class VersionInfo {
 	public VersionInfo() {
 		try {
 			versionData = parseStream(SimpleInstaller.profileFileLocation.openStream());
+
+			int remoteVersion = Integer.parseInt(versionData.getNumberValue("version"));
+			if (remoteVersion < VERSION) {
+				JOptionPane.showMessageDialog(null, "The profile file you are using is out of date, please specify a more uptodate file", "Out of Data", JOptionPane.ERROR_MESSAGE);
+				System.exit(1);
+			} else if (remoteVersion > VERSION) {
+				JOptionPane.showMessageDialog(null, "The installer you are using is out of date, please update your installer", "Out of Data", JOptionPane.ERROR_MESSAGE);
+				System.exit(2);
+			}
+			
 		} catch (Exception e) {
 			throw Throwables.propagate(e);
 		}

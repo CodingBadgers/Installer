@@ -24,6 +24,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
+import com.google.common.base.Splitter;
 import com.google.common.base.Throwables;
 
 @SuppressWarnings("serial")
@@ -75,11 +76,15 @@ public class InstallerPanel extends JPanel {
 		logoLabel.setSize(image.getWidth(), image.getHeight());
 		logoSplash.add(logoLabel);
 		
-		JLabel tag = new JLabel(VersionInfo.getWelcomeMessage());
-		tag.setAlignmentX(CENTER_ALIGNMENT);
-		tag.setAlignmentY(CENTER_ALIGNMENT);
-		logoSplash.add(tag);
-
+		String welcomeMessage = VersionInfo.getWelcomeMessage();
+		
+		for (String line : Splitter.on('\n').omitEmptyStrings().split(welcomeMessage)) {
+			JLabel tag = new JLabel(line);
+			tag.setAlignmentX(CENTER_ALIGNMENT);
+			tag.setAlignmentY(CENTER_ALIGNMENT);
+			logoSplash.add(tag);
+		}
+		
 		logoSplash.setAlignmentX(CENTER_ALIGNMENT);
 		logoSplash.setAlignmentY(TOP_ALIGNMENT);
 		this.add(logoSplash);
