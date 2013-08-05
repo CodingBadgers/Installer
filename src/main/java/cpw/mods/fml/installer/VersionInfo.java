@@ -31,7 +31,7 @@ import com.google.common.io.OutputSupplier;
 import cpw.mods.fml.installer.mods.ModInfo;
 
 public class VersionInfo {
-	public static final int VERSION = 2;
+	public static final int VERSION = 3;
 	public static final VersionInfo INSTANCE = new VersionInfo();
 	private static String forgeVersion;
 	private static String minecraftVersion;

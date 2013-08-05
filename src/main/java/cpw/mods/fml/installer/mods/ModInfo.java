@@ -3,6 +3,7 @@ package cpw.mods.fml.installer.mods;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.ProgressMonitor;
@@ -19,6 +20,7 @@ public class ModInfo {
 	private URL modDownload;
 	private FileType filetype;
 	private InstallMethod installMethod;
+	private ConfigInfo[] configs;
 	
 	public ModInfo(JsonNode mod) {
 		try {
@@ -28,6 +30,17 @@ public class ModInfo {
 			modDownload = new URL(mod.getStringValue("url"));
 			filetype = FileType.valueOf(mod.getStringValue("filetype"));
 			installMethod = InstallMethod.valueOf(mod.getStringValue("installMethod"));
+			
+			if (mod.isArrayNode("config")) {
+				List<JsonNode> json = mod.getArrayNode("config");
+				configs = new ConfigInfo[json.size()];
+				int i = 0;
+				
+				for(JsonNode node : json) {
+					configs[i] = new ConfigInfo(node);
+					i++;
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, "There was a error reading the mod information", "Error", JOptionPane.ERROR_MESSAGE);
@@ -73,5 +86,18 @@ public class ModInfo {
 		}
 		
 		return new DownloadFile(modDownload, target);
+	}
+	
+	public DownloadFile[] createConfigDownloads(File dir, ProgressMonitor monitor) {
+		if (configs != null && configs.length > 0) {
+			DownloadFile[] downloads = new DownloadFile[configs.length];
+			int i = 0;
+			for (ConfigInfo info : configs) {
+				downloads[i++] = info.createDownload(dir, monitor);
+			}
+			return downloads;
+		} else {
+			return new DownloadFile[0];
+		}
 	}
 }

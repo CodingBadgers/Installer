@@ -150,6 +150,10 @@ public class ClientInstall implements ActionType {
             	DownloadFile download = mod.createDownload(target, monitor);
             	totalCount += download.getFileSize();
             	downloads.add(download);
+            	for (DownloadFile info : mod.createConfigDownloads(target, monitor)) {
+                	totalCount += info.getFileSize();
+                	downloads.add(info);
+            	}
 	            monitor.setProgress(i++);	            
             }
             
