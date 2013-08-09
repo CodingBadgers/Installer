@@ -25,6 +25,7 @@ public enum InstallerAction {
             throw Throwables.propagate(e);
         }
     }
+    
     public String getButtonLabel()
     {
         return label;
@@ -39,6 +40,7 @@ public enum InstallerAction {
     {
         return action.run(path);
     }
+    
     public boolean isPathValid(File targetDir)
     {
         return action.isPathValid(targetDir);
@@ -48,6 +50,7 @@ public enum InstallerAction {
     {
         return action.getFileError(targetDir);
     }
+    
     public String getSuccessMessage()
     {
         return action.getSuccessMessage();

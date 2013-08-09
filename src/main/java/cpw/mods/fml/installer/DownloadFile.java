@@ -38,6 +38,13 @@ public class DownloadFile {
 			fileSize = connection.getContentLength();
 			
 			in = new BufferedInputStream(connection.getInputStream());
+			
+			if (!dest.getParentFile().exists() && !dest.getParentFile().mkdirs()) {
+				JOptionPane.showMessageDialog(null, "There was a error creating download folder for " + url + ", skipping download", "Error", JOptionPane.WARNING_MESSAGE);
+				siteActive = false;
+				return;
+			}
+			
 			out = new FileOutputStream(dest);
 			siteActive = true;
 		} catch (IOException e) {
