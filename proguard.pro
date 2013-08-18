@@ -1,8 +1,5 @@
 -libraryjars <java.home>/lib/rt.jar
 
--dontoptimize
--dontobfuscate
--dontpreverify
 -dontwarn javax.annotation.**
 -dontwarn javax.inject.**
 
@@ -13,11 +10,22 @@
     public static void main(java.lang.String[]);
 }
 
+-keepclassmembers class cpw.mods.fml.installer.ModInfo {
+	<init>(**);	
+}
+
 # Also keep - Enumerations. Keep the special static methods that are required in
 # enumeration classes.
--keepclassmembers enum  * {
+-keepclassmembers enum * {
     public static **[] values();
     public static ** valueOf(java.lang.String);
+}
+
+# Also keep - Enumerations. Keep the special static methods that are required in
+# enumeration classes.
+-keep,allowshrinking enum  cpw.mods.** {
+    <fields>;
+    <methods>;
 }
 
 # Also keep - Swing UI L&F. Keep all extensions of javax.swing.plaf.ComponentUI,
