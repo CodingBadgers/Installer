@@ -29,9 +29,10 @@ import com.google.common.io.Files;
 import com.google.common.io.OutputSupplier;
 
 import cpw.mods.fml.installer.mods.ModInfo;
+import cpw.mods.fml.installer.mods.ResourcePackInfo;
 
 public class VersionInfo {
-	public static final int VERSION = 3;
+	public static final int VERSION = 4;
 	public static final VersionInfo INSTANCE = new VersionInfo();
 	private static String forgeVersion;
 	private static String minecraftVersion;
@@ -76,6 +77,10 @@ public class VersionInfo {
 		input = input.replace("${forge_version}", getForgeVersion());
 		return input;
 	}
+	
+	public static boolean isHeadless() {
+		return INSTANCE.versionData.getBooleanValue("install", "headless");
+	}
 
 	public static String getProfileName() {
 		return INSTANCE.versionData.getStringValue("install", "profileName");
@@ -83,6 +88,42 @@ public class VersionInfo {
 
 	public static String getVersionTarget() {
 		return INSTANCE.versionData.getStringValue("install", "target");
+	}
+
+	public static String getTitle() {
+		return INSTANCE.versionData.getStringValue("install", "title");
+	}
+
+	public static String getWelcomeMessage() {
+		return INSTANCE.versionData.getStringValue("install", "welcome");
+	}
+
+	public static String getLogoFileName() {
+		return INSTANCE.versionData.getStringValue("install", "logo");
+	}
+
+	public static JsonNode getVersionInfo() {
+		return INSTANCE.versionData.getNode("versionInfo");
+	}
+
+	public static String getContainedFile() {
+		return INSTANCE.versionData.getStringValue("install", "filePath");
+	}
+
+	public static void extractFile(File path) throws IOException {
+		INSTANCE.doFileExtract(path);
+	}
+
+	private static String getForgeVersion() {
+		return forgeVersion;
+	}
+
+	public static String getMinecraftVersion() {
+		return minecraftVersion;
+	}
+
+	public static File getMinecraftFile(File path) {
+		return new File(new File(path, getMinecraftVersion()), getMinecraftVersion() + ".jar");
 	}
 
 	public static File getLibraryPath(File root) {
@@ -98,22 +139,6 @@ public class VersionInfo {
 		return new File(dest, fileName);
 	}
 
-	public static String getVersion() {
-		return INSTANCE.versionData.getStringValue("install", "version");
-	}
-
-	public static String getWelcomeMessage() {
-		return INSTANCE.versionData.getStringValue("install", "welcome");
-	}
-
-	public static String getLogoFileName() {
-		return INSTANCE.versionData.getStringValue("install", "logo");
-	}
-
-	public static JsonNode getVersionInfo() {
-		return INSTANCE.versionData.getNode("versionInfo");
-	}
-
 	public static URL getForgeDownloadUrl() {
 		try {
 			return new URL(replaceMacros(INSTANCE.versionData.getStringValue("install", "forgeUrl")));
@@ -123,30 +148,10 @@ public class VersionInfo {
 		}
 	}
 
-	private static String getForgeVersion() {
-		return forgeVersion;
-	}
-
-	public static File getMinecraftFile(File path) {
-		return new File(new File(path, getMinecraftVersion()), getMinecraftVersion() + ".jar");
-	}
-
-	public static String getContainedFile() {
-		return INSTANCE.versionData.getStringValue("install", "filePath");
-	}
-
-	public static void extractFile(File path) throws IOException {
-		INSTANCE.doFileExtract(path);
-	}
-
 	private void doFileExtract(File path) throws IOException {
 		InputStream inputStream = getClass().getResourceAsStream("/" + getContainedFile());
 		OutputSupplier<FileOutputStream> outputSupplier = Files.newOutputStreamSupplier(path);
 		ByteStreams.copy(inputStream, outputSupplier);
-	}
-
-	public static String getMinecraftVersion() {
-		return minecraftVersion;
 	}
 
 	public static List<ProfileInfo> getAccounts(File target) {
@@ -185,5 +190,17 @@ public class VersionInfo {
 		}
 
 		return modData;
+	}
+	
+	public static List<ResourcePackInfo> getResourcePacks() {
+		List<ResourcePackInfo> packData = new ArrayList<ResourcePackInfo>();
+		List<JsonNode> packs = INSTANCE.versionData.getArrayNode("resources", "packs");
+
+		for (JsonNode pack : packs) {
+			ResourcePackInfo modInfo = new ResourcePackInfo(pack);
+			packData.add(modInfo);
+		}
+
+		return packData;
 	}
 }

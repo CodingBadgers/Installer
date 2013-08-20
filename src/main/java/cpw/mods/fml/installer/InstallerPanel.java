@@ -29,7 +29,7 @@ import com.google.common.base.Throwables;
 
 @SuppressWarnings("serial")
 public class InstallerPanel extends JPanel {
-	private File targetDir;
+	
 	private JTextField selectedDirText;
 	private JLabel infoLabel;
 	private JDialog dialog;
@@ -42,12 +42,12 @@ public class InstallerPanel extends JPanel {
 			JFileChooser dirChooser = new JFileChooser();
 			dirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			dirChooser.setFileHidingEnabled(false);
-			dirChooser.ensureFileIsVisible(targetDir);
-			dirChooser.setSelectedFile(targetDir);
+			dirChooser.ensureFileIsVisible(SimpleInstaller.installdir);
+			dirChooser.setSelectedFile(SimpleInstaller.installdir);
 			int response = dirChooser.showOpenDialog(InstallerPanel.this);
 			switch (response) {
 			case JFileChooser.APPROVE_OPTION:
-				targetDir = dirChooser.getSelectedFile();
+				SimpleInstaller.installdir = dirChooser.getSelectedFile();
 				updateFilePath();
 				break;
 			default:
@@ -57,7 +57,7 @@ public class InstallerPanel extends JPanel {
 	}
 
 	public InstallerPanel(File targetDir) {
-		this.targetDir = targetDir;
+		SimpleInstaller.installdir = targetDir;
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		BufferedImage image;
 		try {
@@ -147,14 +147,14 @@ public class InstallerPanel extends JPanel {
 
 	private void updateFilePath() {
 		try {
-			targetDir = targetDir.getCanonicalFile();
-			selectedDirText.setText(targetDir.getPath());
+			SimpleInstaller.installdir = SimpleInstaller.installdir.getCanonicalFile();
+			selectedDirText.setText(SimpleInstaller.installdir.getPath());
 		} catch (IOException e) {
 
 		}
 
 		InstallerAction action = InstallerAction.CLIENT;
-		boolean valid = action.isPathValid(targetDir);
+		boolean valid = action.isPathValid(SimpleInstaller.installdir);
 
 		if (valid) {
 			selectedDirText.setForeground(Color.BLACK);
@@ -167,7 +167,7 @@ public class InstallerPanel extends JPanel {
 		} else {
 			selectedDirText.setForeground(Color.RED);
 			fileEntryPanel.setBorder(new LineBorder(Color.RED));
-			infoLabel.setText("<html>" + action.getFileError(targetDir) + "</html>");
+			infoLabel.setText("<html>" + action.getFileError(SimpleInstaller.installdir) + "</html>");
 			infoLabel.setVisible(true);
 			if (dialog != null) {
 				dialog.invalidate();
@@ -183,15 +183,12 @@ public class InstallerPanel extends JPanel {
 		emptyFrame.setUndecorated(true);
 		emptyFrame.setVisible(true);
 		emptyFrame.setLocationRelativeTo(null);
-		dialog = optionPane.createDialog(emptyFrame, "Mod system installer");
+		dialog = optionPane.createDialog(emptyFrame, VersionInfo.getTitle());
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		dialog.setVisible(true);
 		int result = (Integer) (optionPane.getValue() != null ? optionPane.getValue() : -1);
 		if (result == JOptionPane.OK_OPTION) {
-			InstallerAction action = InstallerAction.CLIENT;;
-			if (action.run(targetDir)) {
-				JOptionPane.showMessageDialog(null, action.getSuccessMessage(), "Complete", JOptionPane.INFORMATION_MESSAGE);
-			}
+			SimpleInstaller.runInstaller();
 		}
 		dialog.dispose();
 		emptyFrame.dispose();

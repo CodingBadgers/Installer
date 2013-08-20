@@ -6,9 +6,10 @@ import java.net.URL;
 import java.util.List;
 
 import javax.swing.JOptionPane;
-import javax.swing.ProgressMonitor;
 
 import cpw.mods.fml.installer.DownloadFile;
+import cpw.mods.fml.installer.IMonitor;
+import cpw.mods.fml.installer.mods.installer.InstallMethod;
 
 import argo.jdom.JsonNode;
 
@@ -68,8 +69,8 @@ public class ModInfo {
 		return filetype.createFileName(this);
 	}
 	
-	public DownloadFile createDownload(File dir, ProgressMonitor monitor) throws ReflectiveOperationException {
-		File target = installMethod.getInstaller(this).getDownload(dir);
+	public DownloadFile createDownload(File dir, IMonitor monitor) throws ReflectiveOperationException {
+		File target = InstallMethod.getInstaller(installMethod, this).getDownload(dir);
 		
 		try {
 			if (target.exists()) {
@@ -88,7 +89,7 @@ public class ModInfo {
 		return new DownloadFile(modDownload, target);
 	}
 	
-	public DownloadFile[] createConfigDownloads(File dir, ProgressMonitor monitor) {
+	public DownloadFile[] createConfigDownloads(File dir, IMonitor monitor) {
 		if (configs != null && configs.length > 0) {
 			DownloadFile[] downloads = new DownloadFile[configs.length];
 			int i = 0;

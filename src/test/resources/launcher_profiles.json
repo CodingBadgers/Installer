@@ -1,0 +1,17 @@
+{
+  "profiles": {
+    "TheFish97": {
+      "name": "TheFish97",
+      "lastVersionId": "1.6.2",
+      "launcherVisibilityOnGameClose": "keep the launcher open"
+    }
+  },
+  "authenticationDatabase": {
+    "fake_test_account": {
+      "username": "fake_test_account",
+      "accessToken": "fake_test_account",
+      "uuid": "fake_test_account",
+      "displayName": "fake_test_account"
+    }
+  }
+}

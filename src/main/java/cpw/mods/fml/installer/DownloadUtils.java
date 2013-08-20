@@ -18,32 +18,23 @@ import com.google.common.io.InputSupplier;
 
 public class DownloadUtils {
 
-	public static int downloadInstalledLibraries(String jsonMarker,
-			File librariesDir, IMonitor monitor, List<JsonNode> libraries,
-			int progress, List<String> grabbed, List<String> bad) {
+	public static int downloadInstalledLibraries(String jsonMarker, File librariesDir, IMonitor monitor, List<JsonNode> libraries, int progress, List<String> grabbed, List<String> bad) {
 		for (JsonNode library : libraries) {
 			String libName = library.getStringValue("name");
 			monitor.setNote(String.format("Considering library %s", libName));
-			if (library.isBooleanValue(jsonMarker)
-					&& library.getBooleanValue(jsonMarker)) {
-				String[] nameparts = Iterables.toArray(
-						Splitter.on(':').split(libName), String.class);
+			if (library.isBooleanValue(jsonMarker) && library.getBooleanValue(jsonMarker)) {
+				String[] nameparts = Iterables.toArray(Splitter.on(':').split(libName), String.class);
 				nameparts[0] = nameparts[0].replace('.', '/');
 				String jarName = nameparts[1] + '-' + nameparts[2] + ".jar";
-				String pathName = nameparts[0] + '/' + nameparts[1] + '/'
-						+ nameparts[2] + '/' + jarName;
-				File libPath = new File(librariesDir, pathName.replace('/',
-						File.separatorChar));
-				String libURL = library.isStringValue("url") ? library
-						.getStringValue("url") + "/"
-						: "https://s3.amazonaws.com/Minecraft.Download/libraries/";
+				String pathName = nameparts[0] + '/' + nameparts[1] + '/' + nameparts[2] + '/' + jarName;
+				File libPath = new File(librariesDir, pathName.replace('/', File.separatorChar));
+				String libURL = library.isStringValue("url") ? library.getStringValue("url") + "/" : "https://s3.amazonaws.com/Minecraft.Download/libraries/";
 				if (libPath.exists()) {
 					monitor.setProgress(progress++);
 					continue;
 				}
 				libPath.getParentFile().mkdirs();
-				monitor.setNote(String
-						.format("Downloading library %s", libName));
+				monitor.setNote(String.format("Downloading library %s", libName));
 				libURL += pathName;
 				if (!downloadFile(libName, libPath, libURL)) {
 					bad.add(libName);
@@ -56,15 +47,13 @@ public class DownloadUtils {
 		return progress;
 	}
 
-	public static boolean downloadFile(String libName, File libPath,
-			String libURL) {
+	public static boolean downloadFile(String libName, File libPath, String libURL) {
 		try {
 			URL url = new URL(libURL);
 			URLConnection connection = url.openConnection();
 			connection.setConnectTimeout(5000);
 			connection.setReadTimeout(5000);
-			InputSupplier<InputStream> urlSupplier = new URLISSupplier(
-					connection);
+			InputSupplier<InputStream> urlSupplier = new URLISSupplier(connection);
 			Files.copy(urlSupplier, libPath);
 			return true;
 		} catch (Exception e) {
@@ -86,35 +75,65 @@ public class DownloadUtils {
 	}
 
 	public static IMonitor buildMonitor() {
+		if (SimpleInstaller.headless) {
+			return new IMonitor() {
 
-		return new IMonitor() {
-			private ProgressMonitor monitor;
-			{
-				monitor = new ProgressMonitor(null, "Downloading libraries",
-						"Libraries are being analyzed", 0, 1);
-				monitor.setMillisToPopup(0);
-				monitor.setMillisToDecideToPopup(0);
-			}
+				@Override
+				public void setMaximum(int max) {
+				}
 
-			@Override
-			public void setMaximum(int max) {
-				monitor.setMaximum(max);
-			}
+				@Override
+				public void setNote(String note) {
+				}
 
-			@Override
-			public void setNote(String note) {
-				monitor.setNote(note);
-			}
+				@Override
+				public void setProgress(int progress) {
+				}
 
-			@Override
-			public void setProgress(int progress) {
-				monitor.setProgress(progress);
-			}
+				@Override
+				public void close() {
+				}
 
-			@Override
-			public void close() {
-				monitor.close();
-			}
-		};
+				@Override
+				public int getMaximum() {
+					return -1;
+				}
+
+			};
+		} else {
+			return new IMonitor() {
+				private ProgressMonitor monitor;
+				{
+					monitor = new ProgressMonitor(null, "Downloading libraries", "Libraries are being analyzed", 0, 1);
+					monitor.setMillisToPopup(0);
+					monitor.setMillisToDecideToPopup(0);
+				}
+
+				@Override
+				public void setMaximum(int max) {
+					monitor.setMaximum(max);
+				}
+
+				@Override
+				public void setNote(String note) {
+					monitor.setNote(note);
+				}
+
+				@Override
+				public void setProgress(int progress) {
+					monitor.setProgress(progress);
+				}
+
+				@Override
+				public void close() {
+					monitor.close();
+				}
+
+				@Override
+				public int getMaximum() {
+					return monitor.getMaximum();
+				}
+			};
+		}
 	}
 }

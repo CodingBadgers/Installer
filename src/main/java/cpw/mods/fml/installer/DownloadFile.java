@@ -10,7 +10,6 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import javax.swing.JOptionPane;
-import javax.swing.ProgressMonitor;
 
 import org.apache.commons.io.IOUtils;
 
@@ -58,9 +57,9 @@ public class DownloadFile {
 		return fileSize;
 	}
 	
-	public int run(ProgressMonitor monitor, int current) {
+	public int run(IMonitor monitor, int current) {
 		if (!siteActive) {
-			System.out.println("Skipping download of " + url + " try again later");
+			System.err.println("Skipping download of " + url + " try again later");
 			return current;
 		}
 		

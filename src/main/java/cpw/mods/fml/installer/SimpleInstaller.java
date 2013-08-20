@@ -17,20 +17,31 @@ import joptsimple.OptionSpecBuilder;
 public class SimpleInstaller {
 
 	public static URL profileFileLocation;
+	public static File installdir = null;
+	public static boolean headless = true;
 
+	private static OptionParser parser;
 	private static OptionSpecBuilder helpOption;
+	private static OptionSpecBuilder headlessOption;
 	private static OptionSpec<String> profileFileOption;
+	private static OptionSpec<String> installdirOption;
 
+	static {
+		parser = new OptionParser();
+		helpOption = parser.acceptsAll(Arrays.asList("h", "help"), "Help with this installer");
+		headlessOption = parser.acceptsAll(Arrays.asList("headless"), "Launches the installer without a gui");
+		installdirOption = parser.acceptsAll(Arrays.asList("dir", "install"), "Sets the installation directory").withRequiredArg();
+		profileFileOption = parser.acceptsAll(Arrays.asList("profile", "p", "file"), "Specifies the profile file location to use").withRequiredArg();
+	}
+	
 	/**
 	 * @param args
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
+		headless = false;
 		profileFileLocation = new URL("http://mcbadgercraft.com/adminpack/");
 
-		OptionParser parser = new OptionParser();
-		helpOption = parser.acceptsAll(Arrays.asList("h", "help"), "Help with this installer");
-		profileFileOption = parser.acceptsAll(Arrays.asList("profile", "p", "file"), "Specifies the profile file location to use").withRequiredArg();
 		OptionSet optionSet = parser.parse(args);
 
 		if (optionSet.specs().size() > 0) {
@@ -40,7 +51,32 @@ public class SimpleInstaller {
 		}
 		
 		System.out.println(profileFileLocation);
+		if (VersionInfo.isHeadless()) {
+			headless = true;
+		}
+		
+		if (headless) {
+			runInstaller();
+			return;
+		}
+		
 		launchGui();
+	}
+
+	public static boolean runInstaller() {
+		InstallerAction action = InstallerAction.CLIENT;
+		
+		if (action.run(installdir)) {
+			if (headless) {
+				System.out.println(action.getSuccessMessage());
+			} else {
+				JOptionPane.showMessageDialog(null, action.getSuccessMessage(), "Complete", JOptionPane.INFORMATION_MESSAGE);
+			}
+			
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	private static boolean handleOptions(OptionParser parser, OptionSet optionSet) throws IOException {
@@ -48,35 +84,52 @@ public class SimpleInstaller {
 		if (optionSet.has(helpOption)) {
 			parser.printHelpOn(System.err);
 			return false;
-		} else if (optionSet.has(profileFileOption)) {
+		}
+		
+		if (optionSet.has(profileFileOption)) {
 			String file = optionSet.valueOf(profileFileOption);
 			URL url = new URL(file);
 			profileFileLocation = url;
-			return true;
+		}
+		
+		if (optionSet.has(headlessOption)) {
+			System.out.println("Running in headless mode");
+			headless = true;
+		}
+		
+		if (optionSet.has(installdirOption)) {
+			installdir = new File(optionSet.valueOf(installdirOption));
 		}
 		
 		return true;
 	}
 
 	private static void launchGui() {
-		String userHomeDir = System.getProperty("user.home", ".");
-		String osType = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
 		File targetDir = null;
-		String mcDir = ".minecraft";
 		
-		if (osType.contains("win") && System.getenv("APPDATA") != null) {
-			targetDir = new File(System.getenv("APPDATA"), mcDir);
-		} else if (osType.contains("mac")) {
-			targetDir = new File(new File(new File(userHomeDir, "Library"), "Application Support"), "minecraft");
+		if (installdir == null) {
+			String userHomeDir = System.getProperty("user.home", ".");
+			String osType = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
+			String mcDir = ".minecraft";
+			
+			if (osType.contains("win") && System.getenv("APPDATA") != null) {
+				targetDir = new File(System.getenv("APPDATA"), mcDir);
+			} else if (osType.contains("mac")) {
+				targetDir = new File(new File(new File(userHomeDir, "Library"), "Application Support"), "minecraft");
+			} else {
+				targetDir = new File(userHomeDir, mcDir);
+			}
 		} else {
-			targetDir = new File(userHomeDir, mcDir);
+			targetDir = installdir;
 		}
 
 		try {
 			VersionInfo.getVersionTarget();
 		} catch (Throwable e) {
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Corrupt download detected, cannot install", "Error", JOptionPane.ERROR_MESSAGE);
+			if (!headless) {
+				JOptionPane.showMessageDialog(null, "Corrupt download detected, cannot install", "Error", JOptionPane.ERROR_MESSAGE);
+			}
 			return;
 		}
 
