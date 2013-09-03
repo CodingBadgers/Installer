@@ -4,7 +4,6 @@ import java.io.File;
 import java.net.URL;
 
 import javax.swing.JOptionPane;
-import javax.swing.ProgressMonitor;
 
 import org.apache.commons.io.FileUtils;
 

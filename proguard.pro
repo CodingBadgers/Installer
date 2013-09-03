@@ -1,4 +1,5 @@
 -libraryjars <java.home>/lib/rt.jar
+-printmapping build/proguard/mappings.maps
 
 -dontwarn javax.annotation.**
 -dontwarn javax.inject.**
