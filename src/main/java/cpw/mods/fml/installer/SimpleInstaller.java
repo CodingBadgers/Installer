@@ -51,7 +51,8 @@ public class SimpleInstaller {
 		}
 		
 		System.out.println(profileFileLocation);
-		if (VersionInfo.isHeadless()) {
+		if (System.getenv("headless") != null || VersionInfo.isHeadless()) {
+			System.setProperty("java.awt.headless", "true");
 			headless = true;
 		}
 		
@@ -61,6 +62,19 @@ public class SimpleInstaller {
 		}
 		
 		launchGui();
+	}
+	
+	public static void displayMessage(String message, String title) {
+		if (SimpleInstaller.headless) {
+			try {
+				JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
+				return;
+			} catch (Exception ex) {
+			}
+		}
+		
+		System.out.println(title);
+		System.out.println(message);
 	}
 
 	public static boolean runInstaller() {
@@ -86,15 +100,20 @@ public class SimpleInstaller {
 			return false;
 		}
 		
-		if (optionSet.has(profileFileOption)) {
-			String file = optionSet.valueOf(profileFileOption);
-			URL url = new URL(file);
-			profileFileLocation = url;
-		}
-		
 		if (optionSet.has(headlessOption)) {
 			System.out.println("Running in headless mode");
 			headless = true;
+		}
+		
+		if (optionSet.has(profileFileOption)) {
+			String file = optionSet.valueOf(profileFileOption);
+			
+			try {
+				URL url = new URL(file);
+				profileFileLocation = url;
+			} catch (Exception ex) {
+				System.out.println("Unkown url provided, exiting");
+			}
 		}
 		
 		if (optionSet.has(installdirOption)) {
