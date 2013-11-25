@@ -26,6 +26,9 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 
+import cpw.mods.fml.installer.download.DownloadFile;
+import cpw.mods.fml.installer.download.DownloadMinecraftJar;
+import cpw.mods.fml.installer.download.DownloadUtils;
 import cpw.mods.fml.installer.mods.ModInfo;
 import cpw.mods.fml.installer.mods.ResourcePackInfo;
 
@@ -58,11 +61,21 @@ public class ClientInstall implements ActionType {
 		File clientJarFile = new File(versionTarget, VersionInfo.getVersionTarget() + ".jar");
 		File minecraftJarFile = VersionInfo.getMinecraftFile(versionRootDir);
 		
-		try {
-			Files.copy(minecraftJarFile, clientJarFile);
-		} catch (IOException e1) {
-			displayError("You need to run the version " + VersionInfo.getMinecraftVersion() + " manually at least once");
-			return false;
+		if (!minecraftJarFile.exists()) {
+			try {
+				DownloadMinecraftJar download = new DownloadMinecraftJar(VersionInfo.getMinecraftVersion(), clientJarFile);
+				download.run(DownloadUtils.buildMonitor(), 0);
+			} catch (IOException e) {
+				displayError("Error downloading minecraft jar from mojang repository (" + e.getMessage() + ")");
+				return false;
+			}
+		} else {
+			try {
+				Files.copy(minecraftJarFile, clientJarFile);
+			} catch (IOException e1) {
+				displayError("Error copying minecraft jar to installer directory (" + e1.getMessage() + ")");
+				return false;
+			}
 		}
 
 		JsonRootNode versionJson = object(VersionInfo.getVersionInfo().getFields());

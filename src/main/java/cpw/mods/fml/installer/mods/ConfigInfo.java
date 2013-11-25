@@ -5,8 +5,8 @@ import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
 
-import cpw.mods.fml.installer.DownloadFile;
 import cpw.mods.fml.installer.IMonitor;
+import cpw.mods.fml.installer.download.DownloadFile;
 
 import argo.jdom.JsonNode;
 

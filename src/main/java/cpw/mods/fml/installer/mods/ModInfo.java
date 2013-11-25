@@ -7,8 +7,8 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
-import cpw.mods.fml.installer.DownloadFile;
 import cpw.mods.fml.installer.IMonitor;
+import cpw.mods.fml.installer.download.DownloadFile;
 import cpw.mods.fml.installer.mods.installer.InstallMethod;
 
 import argo.jdom.JsonNode;

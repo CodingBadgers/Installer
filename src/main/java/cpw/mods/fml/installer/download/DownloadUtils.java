@@ -1,4 +1,4 @@
-package cpw.mods.fml.installer;
+package cpw.mods.fml.installer.download;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +15,9 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import com.google.common.io.Files;
 import com.google.common.io.InputSupplier;
+
+import cpw.mods.fml.installer.IMonitor;
+import cpw.mods.fml.installer.SimpleInstaller;
 
 public class DownloadUtils {
 

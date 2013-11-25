@@ -13,6 +13,9 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import cpw.mods.fml.installer.download.DownloadFile;
+import cpw.mods.fml.installer.download.DownloadUtils;
+
 public class TestInstaller {
 
 	@BeforeClass

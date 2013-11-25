@@ -1,4 +1,4 @@
-package cpw.mods.fml.installer;
+package cpw.mods.fml.installer.download;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -12,6 +12,8 @@ import java.net.URLConnection;
 import javax.swing.JOptionPane;
 
 import org.apache.commons.io.IOUtils;
+
+import cpw.mods.fml.installer.IMonitor;
 
 public class DownloadFile {
 

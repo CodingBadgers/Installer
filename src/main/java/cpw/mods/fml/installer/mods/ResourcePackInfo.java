@@ -8,8 +8,8 @@ import javax.swing.JOptionPane;
 import org.apache.commons.io.FileUtils;
 
 import argo.jdom.JsonNode;
-import cpw.mods.fml.installer.DownloadFile;
 import cpw.mods.fml.installer.IMonitor;
+import cpw.mods.fml.installer.download.DownloadFile;
 
 public class ResourcePackInfo {
 
