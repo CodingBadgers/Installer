@@ -1,234 +1,293 @@
 {
-	"version": 4,
-    "versionInfo": 
-	{
-        "minecraftArguments": "--username ${auth_player_name} --session ${auth_session} --gameDir ${game_directory} --assetsDir ${game_assets} --tweakClass com.mumfrey.liteloader.launch.LiteLoaderTweaker --cascadedTweaks cpw.mods.fml.common.launcher.FMLTweaker",
-		"libraries": [
+    "version": 5,
+    "versionInfo": {
+        "id": "${target}",
+        "time": "2014-01-06T23:28:40-0500",
+        "releaseTime": "1960-01-01T00:00:00-0700",
+        "type": "release",
+        "minecraftArguments": "--username ${auth_player_name} --version ${version_name} --gameDir ${game_directory} --assetsDir ${game_assets} --uuid ${auth_uuid} --accessToken ${auth_access_token} --tweakClass com.mumfrey.liteloader.launch.LiteLoaderTweaker --tweakClass cpw.mods.fml.common.launcher.FMLTweaker",
+        "libraries": [
             {
-				"name": "net.minecraftforge:minecraftforge:${forge_version}",
-				"url": "http://files.minecraftforge.net/maven/"
+                "name": "net.minecraftforge:forge:${forge_version}",
+                "url": "http://files.minecraftforge.net/maven/"
+            },
+            {
+                "name": "net.minecraft:launchwrapper:1.9",
+                "serverreq": true
+            },
+            {
+                "name": "org.ow2.asm:asm-all:4.1",
+                "serverreq": true
+            },
+            {
+                "name": "org.apache.httpcomponents:httpclient:4.3.1",
+                "url": "http://repo1.maven.org/maven2/",
+                "serverreq": true
+            },
+            {
+                "name": "org.apache.httpcomponents:httpcore:4.3",
+                "url": "http://repo1.maven.org/maven2/",
+                "serverreq": true
+            },
+            {
+                "name": "commons-net:commons-net:3.3",
+                "url": "http://repo1.maven.org/maven2/",
+                "serverreq": true
+            },
+			{
+				"name": "commons-codec:commons-codec:1.9",
+				"url": "http://repo1.maven.org/maven2/",
+				"serverreq": true
 			},
 			{
-				"name": "org.ow2.asm:asm-all:4.1"
+				"name": "commons-logging:commons-logging:1.1.1",
+				"url": "http://repo1.maven.org/maven2/",
+				"serverreq": true
 			},
+            {
+                "name": "org.scala-lang:scala-library:2.10.2",
+                "url": "http://files.minecraftforge.net/maven/",
+                "checksums": [
+                    "6ba65d12cd09d441083262d6f73d2257fec7c663",
+                    "65de4339eaed1c3675485fb03a3532fecfd8e8cd"
+                ],
+                "comment": "Important for FML, we add this",
+                "serverreq": true,
+                "clientreq": true
+            },
+            {
+                "name": "org.scala-lang:scala-compiler:2.10.2",
+                "url": "http://files.minecraftforge.net/maven/",
+                "checksums": [
+                    "64c8b1380cc53d6850823d6e4e7ae984aa44ef9c",
+                    "99fd0ffb66f3088b0cd1071315fd5eb2b2b070ff"
+                ],
+                "comment": "Important for FML, we add this",
+                "serverreq": true,
+                "clientreq": true
+            },
 			{
-				"name": "com.mumfrey:liteloader:${minecraft_version}",
+				"name": "com.mumfrey:liteloader:1.7.2",
 				"url": "http://dl.liteloader.com/versions/"
 			},
-			{
-				"name": "net.minecraft:launchwrapper:1.3"
-			},
-			{
-				"name": "lzma:lzma:0.0.1"
-			},
-			{
-				"name": "net.optifine:optifine:1.6.2_HD_U_B4",
-				"serverreq": false
-			},
-			{
-				"name": "net.sf.jopt-simple:jopt-simple:4.5"
-			},
-			{
-				"name": "com.paulscode:codecjorbis:20101023"
-			},
-			{
-				"name": "com.paulscode:codecwav:20101023"
-			},
-			{
-				"name": "com.paulscode:libraryjavasound:20101123"
-			},
-			{
-				"name": "com.paulscode:librarylwjglopenal:20100824"
-			},
-			{
-				"name": "com.paulscode:soundsystem:20120107"
-			},
-			{
-				"name": "argo:argo:2.25_fixed"
-			},
-			{
-				"name": "org.bouncycastle:bcprov-jdk15on:1.47"
-			},
-			{
-				"name": "com.google.guava:guava:14.0"
-			},
-			{
-				"name": "org.apache.commons:commons-lang3:3.1"
-			},
-			{
-				"name": "commons-io:commons-io:2.4"
-			},
-			{
-				"name": "net.java.jinput:jinput:2.0.5"
-			},
-			{
-				"name": "net.java.jutils:jutils:1.0.0"
-			},
-			{
-				"name": "com.google.code.gson:gson:2.2.2"
-			},
-			{
-				"name": "org.lwjgl.lwjgl:lwjgl:2.9.0",
-				"rules": [
-					{
-						"action": "allow"
-					},
-					{
-						"action": "disallow",
-						"os": {
-							"name": "osx",
-							"version": "^10\\.5\\.\\d$"
-						}
-					}
-				]
-			},
-			{
-				"name": "org.lwjgl.lwjgl:lwjgl_util:2.9.0",
-				"rules": [
-					{
-						"action": "allow"
-					},
-					{
-						"action": "disallow",
-						"os": {
-							"name": "osx",
-							"version": "^10\\.5\\.\\d$"
-						}
-					}
-				]
-			},
-			{
-				"name": "org.lwjgl.lwjgl:lwjgl-platform:2.9.0",
-				"rules": [
-					{
-						"action": "allow"
-					},
-					{
-						"action": "disallow",
-						"os": {
-							"name": "osx",
-							"version": "^10\\.5\\.\\d$"
-						}
-					}
-				],
-				"natives": {
-					"linux": "natives-linux",
-					"windows": "natives-windows",
-					"osx": "natives-osx"
-				},
-				"extract": {
-					"exclude": [
-						"META-INF/"
-					]
-				}
-			},
-			{
-				"name": "org.lwjgl.lwjgl:lwjgl:2.9.1-nightly-20130708-debug3",
-				"rules": [
-					{
-						"action": "allow",
-						"os": {
-							"name": "osx",
-							"version": "^10\\.5\\.\\d$"
-						}
-					}
-				]
-			},
-			{
-				"name": "org.lwjgl.lwjgl:lwjgl_util:2.9.1-nightly-20130708-debug3",
-				"rules": [
-					{
-						"action": "allow",
-						"os": {
-							"name": "osx",
-							"version": "^10\\.5\\.\\d$"
-						}
-					}
-				]
-			},
-			{
-				"name": "org.lwjgl.lwjgl:lwjgl-platform:2.9.1-nightly-20130708-debug3",
-				"rules": [
-					{
-						"action": "allow",
-						"os": {
-							"name": "osx",
-							"version": "^10\\.5\\.\\d$"
-						}
-					}
-				],
-				"natives": {
-					"linux": "natives-linux",
-					"windows": "natives-windows",
-					"osx": "natives-osx"
-				},
-				"extract": {
-					"exclude": [
-						"META-INF/"
-					]
-				}
-			},
-			{
-				"name": "net.java.jinput:jinput-platform:2.0.5",
-				"natives": {
-					"linux": "natives-linux",
-					"windows": "natives-windows",
-					"osx": "natives-osx"
-				},
-				"extract": {
-					"exclude": [
-						"META-INF/"
-					]
-				}
-			}
-		],
+            {
+                "name": "java3d:vecmath:1.3.1"
+            },
+            {
+                "name": "net.sf.trove4j:trove4j:3.0.3"
+            },
+            {
+                "name": "com.ibm.icu:icu4j-core-mojang:51.2"
+            },
+            {
+                "name": "net.sf.jopt-simple:jopt-simple:4.5",
+                "serverreq": true
+            },
+            {
+                "name": "lzma:lzma:0.0.1",
+                "serverreq": true
+            },
+            {
+                "name": "com.paulscode:codecjorbis:20101023"
+            },
+            {
+                "name": "com.paulscode:codecwav:20101023"
+            },
+            {
+                "name": "com.paulscode:libraryjavasound:20101123"
+            },
+            {
+                "name": "com.paulscode:librarylwjglopenal:20100824"
+            },
+            {
+                "name": "com.paulscode:soundsystem:20120107"
+            },
+            {
+                "name": "io.netty:netty-all:4.0.10.Final"
+            },
+            {
+                "name": "com.google.guava:guava:15.0"
+            },
+            {
+                "name": "org.apache.commons:commons-lang3:3.1"
+            },
+            {
+                "name": "commons-io:commons-io:2.4"
+            },
+            {
+                "name": "net.java.jinput:jinput:2.0.5"
+            },
+            {
+                "name": "net.java.jutils:jutils:1.0.0"
+            },
+            {
+                "name": "com.google.code.gson:gson:2.2.4"
+            },
+            {
+                "name": "com.mojang:authlib:1.3"
+            },
+            {
+                "name": "org.apache.logging.log4j:log4j-api:2.0-beta9"
+            },
+            {
+                "name": "org.apache.logging.log4j:log4j-core:2.0-beta9"
+            },
+            {
+                "name": "org.lwjgl.lwjgl:lwjgl:2.9.0",
+                "rules": [
+                    {
+                        "action": "allow"
+                    },
+                    {
+                        "action": "disallow",
+                        "os": {
+                            "name": "osx"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "org.lwjgl.lwjgl:lwjgl_util:2.9.0",
+                "rules": [
+                    {
+                        "action": "allow"
+                    },
+                    {
+                        "action": "disallow",
+                        "os": {
+                            "name": "osx"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "org.lwjgl.lwjgl:lwjgl-platform:2.9.0",
+                "rules": [
+                    {
+                        "action": "allow"
+                    },
+                    {
+                        "action": "disallow",
+                        "os": {
+                            "name": "osx"
+                        }
+                    }
+                ],
+                "natives": {
+                    "linux": "natives-linux",
+                    "windows": "natives-windows"
+                },
+                "extract": {
+                    "exclude": [
+                        "META-INF/"
+                    ]
+                }
+            },
+            {
+                "name": "org.lwjgl.lwjgl:lwjgl:2.9.1-nightly-20131017",
+                "rules": [
+                    {
+                        "action": "allow",
+                        "os": {
+                            "name": "osx"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "org.lwjgl.lwjgl:lwjgl_util:2.9.1-nightly-20131017",
+                "rules": [
+                    {
+                        "action": "allow",
+                        "os": {
+                            "name": "osx"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "org.lwjgl.lwjgl:lwjgl-platform:2.9.1-nightly-20131017",
+                "rules": [
+                    {
+                        "action": "allow",
+                        "os": {
+                            "name": "osx"
+                        }
+                    }
+                ],
+                "natives": {
+                    "osx": "natives-osx"
+                },
+                "extract": {
+                    "exclude": [
+                        "META-INF/"
+                    ]
+                }
+            },
+            {
+                "name": "net.java.jinput:jinput-platform:2.0.5",
+                "natives": {
+                    "linux": "natives-linux",
+                    "windows": "natives-windows",
+                    "osx": "natives-osx"
+                },
+                "extract": {
+                    "exclude": [
+                        "META-INF/"
+                    ]
+                }
+            }
+        ],
         "mainClass": "net.minecraft.launchwrapper.Launch",
-        "minimumLauncherVersion": 4,
-        "releaseTime": "1960-01-01T00:00:00-0700",
-        "time": "2013-07-24T16:21:53-0500",
-        "id": "Test-Install",
-        "type": "release",
-        "processArguments": "username_session_version"
+        "minimumLauncherVersion": 9
     },
-    "install": 
-	{
-        "welcome": "Test installer",
-		"title": "Test installer",
-		"headless": true,
-		"forgeVersion": "1.6.2-9.10.0.804",
-		"minecraftVersion": "1.6.2",
+    "install": {
+        "headless": false,
+        "welcome": "Welcome to the McBadgerCraft Admin Pack installer.\n You are installing the staff mod pack for minecraft version ${minecraft_version}",
+        "title": "McBadgerCraft Admin Pack Installer",
+        "forgeVersion": "${minecraft_version}-10.12.0.1024",
+        "minecraftVersion": "1.7.2",
+        "target": "McBadgerPack-${minecraft_version}",
         "logo": "/big_logo.png",
-        "target": "Test-Install",
-        "profileName": "Test-Install"
+        "profileName": "McBadgerPack-${minecraft_version}"
     },
-	"resources":
+	"resourcespack":
 	{
-		"active": "BadgerStyle",
-		"packs": 
-		[
-			{
-				"name": "BadgerStyle",
-				"url": "http://mcbadgercraft.com/downloads/badgerstyle/BadgerStyle-1-6-2.zip"
-			}
-		]
+		"active": ""
 	},
-	"mods": 
+	"resources": 
 	[
 		{
-			"name": "minecraftforge",
+			"name": "forge",
 			"version": "${forge_version}",
 			"filetype": "JAR",
 			"installMethod": "LIBRARY",
-			"artifactId": "net.minecraftforge:minecraftforge:${forge_version}",
-			"url": "http://files.minecraftforge.net/minecraftforge/minecraftforge-universal-${forge_version}.jar"
+			"artifactId": "net.minecraftforge:forge:${forge_version}",
+			"url": "http://files.minecraftforge.net/maven/net/minecraftforge/forge/${forge_version}/forge-${forge_version}-universal.jar"
 		},
 		{
 			"name": "bUpload",
-			"version": "1.1.2",
+			"version": "1.4.0-SNAPSHOT",
 			"filetype": "JAR",
 			"installMethod": "MODS",
-			"artifactId": "uk.thecodingbadgers:bUpload:1.1.2",
-			"url": "http://mcbadgercraft.com/downloads/bUpload/bUpload-1.1.2.jar"
+			"artifactId": "uk.thecodingbadgers:bUpload:1.4.0-SNAPSHOT",
+			"url": "http://mcbadgercraft.com/downloads/bUpload/bUpload-${minecraft_version}-1.4.0-SNAPSHOT.jar"
+		},
+		{
+			"name": "badgerstyle",
+			"version": "${minecraft_version}",
+			"filetype": "ZIP",
+			"installMethod": "RESOURCE",
+			"artifactId": "com.mcbadgercraft:badgerstyle:${minecraft_version}",
+			"url": "http://mcbadgercraft.com/downloads/BadgerStyle.zip"
+		},
+		{
+			"name": "lagless",
+			"version": "${minecraft_version}",
+			"filetype": "ZIP",
+			"installMethod": "SHADER",
+			"artifactId": "paolo:lagless:${minecraft_version}",
+			"url": "http://mcbadgercraft.com/adminpack/resources/shaders/%c2%a76Paolo%27s%20%c2%a7aLagLess%20%c2%a74Shaders%20%c2%a7cv03%20%c2%a73RC6.zip"
 		}
 	]
 }
