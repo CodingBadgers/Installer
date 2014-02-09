@@ -1,14 +1,14 @@
-package cpw.mods.fml.installer.mods.installer;
+package cpw.mods.fml.installer.resources.installer;
 
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 
-import cpw.mods.fml.installer.mods.ModInfo;
+import cpw.mods.fml.installer.resources.ResourceInfo;
 
-public class ModInstaller extends ModInstallMethod {
+public class ModInstaller extends ResourceInstallMethod {
 
-	public ModInstaller(ModInfo info) {
+	public ModInstaller(ResourceInfo info) {
 		super(info);
 	}
 

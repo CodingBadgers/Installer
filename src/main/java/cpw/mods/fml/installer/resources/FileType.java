@@ -1,4 +1,4 @@
-package cpw.mods.fml.installer.mods;
+package cpw.mods.fml.installer.resources;
 
 public enum FileType {
 
@@ -13,7 +13,7 @@ public enum FileType {
 		this.ext = extention;
 	}
 	
-	public String createFileName(ModInfo info) {
+	public String createFileName(ResourceInfo info) {
 		return info.getModName() + "-" + info.getModVersion() + ext;
 	}
 }

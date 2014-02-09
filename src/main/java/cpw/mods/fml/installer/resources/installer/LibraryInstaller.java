@@ -1,15 +1,15 @@
-package cpw.mods.fml.installer.mods.installer;
+package cpw.mods.fml.installer.resources.installer;
 
 import java.io.File;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 
-import cpw.mods.fml.installer.mods.ModInfo;
+import cpw.mods.fml.installer.resources.ResourceInfo;
 
-public class LibraryInstaller extends ModInstallMethod {
+public class LibraryInstaller extends ResourceInstallMethod {
 
-	public LibraryInstaller(ModInfo info) {
+	public LibraryInstaller(ResourceInfo info) {
 		super(info);
 	}
 

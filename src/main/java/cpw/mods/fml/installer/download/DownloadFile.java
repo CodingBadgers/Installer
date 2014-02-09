@@ -17,6 +17,8 @@ import cpw.mods.fml.installer.IMonitor;
 
 public class DownloadFile {
 
+	private static final int BUFFER = 1024;
+	
 	private URL url;
 	private File dest;
 	
@@ -69,7 +71,7 @@ public class DownloadFile {
 		monitor.setNote("Downloading " + dest.getName());
     	try {
     		System.out.println("Downloading " + dest.getName());
-			byte data[] = new byte[1024];
+			byte data[] = new byte[BUFFER];
 			int count;
 			while ((count = in.read(data, 0, data.length)) != -1)
 			{

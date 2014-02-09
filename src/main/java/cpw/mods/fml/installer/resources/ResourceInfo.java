@@ -1,4 +1,4 @@
-package cpw.mods.fml.installer.mods;
+package cpw.mods.fml.installer.resources;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,11 +9,11 @@ import javax.swing.JOptionPane;
 
 import cpw.mods.fml.installer.IMonitor;
 import cpw.mods.fml.installer.download.DownloadFile;
-import cpw.mods.fml.installer.mods.installer.InstallMethod;
+import cpw.mods.fml.installer.resources.installer.InstallMethod;
 
 import argo.jdom.JsonNode;
 
-public class ModInfo {
+public class ResourceInfo {
 
 	private String modName;
 	private String modVersion;
@@ -23,7 +23,7 @@ public class ModInfo {
 	private InstallMethod installMethod;
 	private ConfigInfo[] configs;
 	
-	public ModInfo(JsonNode mod) {
+	public ResourceInfo(JsonNode mod) {
 		try {
 			modName = mod.getStringValue("name");
 			modVersion = mod.getStringValue("version");
@@ -79,6 +79,11 @@ public class ModInfo {
 					return null;
 				}
 			}		
+			
+			if (!target.getParentFile().exists() && !target.getParentFile().mkdirs()) {
+				System.out.println("Could not create parent directory (" + target.getParentFile() + ")");
+				return null;
+			}
 			target.createNewFile();
 		} catch (IOException e) {
 			System.err.println("Error creating download for " + getModArtifactId());

@@ -23,11 +23,10 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Throwables;
 import com.google.common.io.Files;
 
-import cpw.mods.fml.installer.mods.ModInfo;
-import cpw.mods.fml.installer.mods.ResourcePackInfo;
+import cpw.mods.fml.installer.resources.ResourceInfo;
 
 public class VersionInfo {
-	public static final int VERSION = 4;
+	public static final int VERSION = 5;
 	public static final VersionInfo INSTANCE = new VersionInfo();
 	private static String forgeVersion;
 	private static String minecraftVersion;
@@ -147,27 +146,16 @@ public class VersionInfo {
 		return profiles;
 	}
 	
-	public static List<ModInfo> getModInfo() {
-		List<ModInfo> modData = new ArrayList<ModInfo>();
-		List<JsonNode> mods = INSTANCE.versionData.getArrayNode("mods");
+	public static List<ResourceInfo> getResources() {
+		List<ResourceInfo> modData = new ArrayList<ResourceInfo>();
+		List<JsonNode> mods = INSTANCE.versionData.getArrayNode("resources");
 
 		for (JsonNode mod : mods) {
-			ModInfo modInfo = new ModInfo(mod);
+			ResourceInfo modInfo = new ResourceInfo(mod);
 			modData.add(modInfo);
 		}
 
 		return modData;
 	}
 	
-	public static List<ResourcePackInfo> getResourcePacks() {
-		List<ResourcePackInfo> packData = new ArrayList<ResourcePackInfo>();
-		List<JsonNode> packs = INSTANCE.versionData.getArrayNode("resources", "packs");
-
-		for (JsonNode pack : packs) {
-			ResourcePackInfo modInfo = new ResourcePackInfo(pack);
-			packData.add(modInfo);
-		}
-
-		return packData;
-	}
 }

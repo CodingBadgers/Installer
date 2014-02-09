@@ -29,8 +29,7 @@ import com.google.common.io.Files;
 import cpw.mods.fml.installer.download.DownloadFile;
 import cpw.mods.fml.installer.download.DownloadMinecraftJar;
 import cpw.mods.fml.installer.download.DownloadUtils;
-import cpw.mods.fml.installer.mods.ModInfo;
-import cpw.mods.fml.installer.mods.ResourcePackInfo;
+import cpw.mods.fml.installer.resources.ResourceInfo;
 
 public class ClientInstall implements ActionType {
 
@@ -91,8 +90,7 @@ public class ClientInstall implements ActionType {
 
 		try {
 			//clear mods directory
-			List<ModInfo> mods = VersionInfo.getModInfo();
-			List<ResourcePackInfo> packs = VersionInfo.getResourcePacks();
+			List<ResourceInfo> resources = VersionInfo.getResources();
 			
 			File modsFolder = new File(target, "mods");
 
@@ -118,25 +116,26 @@ public class ClientInstall implements ActionType {
 			List<DownloadFile> downloads = new ArrayList<>();
 
 			IMonitor monitor = DownloadUtils.buildMonitor();
-			monitor.setMaximum(mods.size() + packs.size() + 1);
+			monitor.setMaximum(resources.size() + 1);
 			int totalCount = 0;
 			int i = 1;
 
-			for (ResourcePackInfo pack : packs) {
-				DownloadFile download = pack.createDownload(target, monitor);
-				totalCount += download.getFileSize();
-				downloads.add(download);
-				monitor.setProgress(i++);
-			}
-			
-			for (ModInfo mod : mods) {
+			for (ResourceInfo mod : resources) {
 				DownloadFile download = mod.createDownload(target, monitor);
+				
+				if (download == null) {
+					displayError("There was a error setting up the download for " + mod.getModName() + " skipping download.");
+					continue;
+				}
+				
 				totalCount += download.getFileSize();
 				downloads.add(download);
+				
 				for (DownloadFile info : mod.createConfigDownloads(target, monitor)) {
 					totalCount += info.getFileSize();
 					downloads.add(info);
 				}
+				
 				monitor.setProgress(i++);
 			}
 

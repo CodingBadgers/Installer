@@ -1,4 +1,4 @@
-package cpw.mods.fml.installer.mods;
+package cpw.mods.fml.installer.resources;
 
 import java.io.File;
 import java.net.URL;
