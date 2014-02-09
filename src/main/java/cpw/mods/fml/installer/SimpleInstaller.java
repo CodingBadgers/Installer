@@ -65,7 +65,7 @@ public class SimpleInstaller {
 	}
 	
 	public static void displayMessage(String message, String title) {
-		if (SimpleInstaller.headless) {
+		if (!SimpleInstaller.headless) {
 			try {
 				JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
 				return;
