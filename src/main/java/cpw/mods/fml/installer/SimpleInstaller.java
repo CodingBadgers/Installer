@@ -1,7 +1,11 @@
 package cpw.mods.fml.installer;
 
+import io.github.thefishlive.bootstrap.Bootstrapper;
+import io.github.thefishlive.bootstrap.Launcher;
+
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Locale;
@@ -14,7 +18,7 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import joptsimple.OptionSpecBuilder;
 
-public class SimpleInstaller {
+public class SimpleInstaller implements Launcher {
 
 	public static URL profileFileLocation;
 	public static File installdir = null;
@@ -38,7 +42,15 @@ public class SimpleInstaller {
 	 * @param args
 	 * @throws IOException
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Throwable {
+		try {
+			Bootstrapper.launch(SimpleInstaller.class, args);
+		} catch (InvocationTargetException ex) {
+			throw ex.getCause();
+		}
+	}
+	
+	public void launch(String[] args) throws IOException {
 		headless = false;
 		profileFileLocation = new URL("http://mcbadgercraft.com/adminpack/");
 

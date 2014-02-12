@@ -1,5 +1,6 @@
 package cpw.mods.fml.installer.resources;
 
+
 public enum FileType {
 
 	JAR(".jar"),

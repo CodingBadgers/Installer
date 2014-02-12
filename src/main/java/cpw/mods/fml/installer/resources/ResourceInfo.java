@@ -84,6 +84,7 @@ public class ResourceInfo {
 				System.out.println("Could not create parent directory (" + target.getParentFile() + ")");
 				return null;
 			}
+			
 			target.createNewFile();
 		} catch (IOException e) {
 			System.err.println("Error creating download for " + getModArtifactId());

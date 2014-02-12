@@ -6,6 +6,7 @@ import org.apache.commons.io.FileUtils;
 
 import cpw.mods.fml.installer.resources.ResourceInfo;
 
+
 public class ShaderInstaller extends ResourceInstallMethod {
 
 	public ShaderInstaller(ResourceInfo info) {

@@ -6,6 +6,7 @@ import org.apache.commons.io.FileUtils;
 
 import cpw.mods.fml.installer.resources.ResourceInfo;
 
+
 public class ResourceInstaller extends ResourceInstallMethod {
 
 	public ResourceInstaller(ResourceInfo info) {

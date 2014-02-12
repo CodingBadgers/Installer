@@ -15,6 +15,10 @@
 	<init>(**);	
 }
 
+-keep,allowshrinking class io.github.thefishlive.bootstrap.Launcher  {
+    void launch(...);
+}
+
 # Also keep - Enumerations. Keep the special static methods that are required in
 # enumeration classes.
 -keepclassmembers enum * {

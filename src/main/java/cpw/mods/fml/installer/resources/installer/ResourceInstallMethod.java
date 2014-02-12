@@ -4,6 +4,7 @@ import java.io.File;
 
 import cpw.mods.fml.installer.resources.ResourceInfo;
 
+
 public abstract class ResourceInstallMethod {
  
 	protected final ResourceInfo mod;

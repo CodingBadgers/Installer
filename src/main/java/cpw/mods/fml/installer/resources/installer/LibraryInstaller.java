@@ -7,6 +7,7 @@ import com.google.common.collect.Iterables;
 
 import cpw.mods.fml.installer.resources.ResourceInfo;
 
+
 public class LibraryInstaller extends ResourceInstallMethod {
 
 	public LibraryInstaller(ResourceInfo info) {

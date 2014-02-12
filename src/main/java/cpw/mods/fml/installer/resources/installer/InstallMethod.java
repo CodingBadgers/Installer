@@ -2,6 +2,7 @@ package cpw.mods.fml.installer.resources.installer;
 
 import cpw.mods.fml.installer.resources.ResourceInfo;
 
+
 public enum InstallMethod {
 
 	MODS(),

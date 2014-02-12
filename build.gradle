@@ -14,8 +14,10 @@ buildscript {
 
 repositories {
     mavenCentral()
+    mavenLocal()
     maven {
         url "http://s3.amazonaws.com/Minecraft.Download/libraries"
+        url "http://repository-codingbadgers.forge.cloudbees.com/snapshot/"
     }
     flatDir {
         name "fileRepo"
@@ -35,6 +37,7 @@ dependencies {
     compile 'com.google.guava:guava:14.0'
     compile 'commons-io:commons-io:2.4'
     compile 'org.apache.commons:commons-lang3:3.1'
+    compile 'io.github.thefishlive:bootstrap:1.0.1'
     testCompile  'junit:junit:4.11'
 }
 
@@ -51,7 +54,6 @@ task fatJar(type: Jar, dependsOn: jar) {
 fatJar.doFirst {
     from zipTree(jar.archivePath)
 }
-
 
 task shrinkJar(type: proguard.gradle.ProGuardTask, dependsOn: jar) {
     ext {
