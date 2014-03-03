@@ -26,7 +26,7 @@ repositories {
 
 group = 'uk.thecodingbadgers'
 archivesBaseName = 'adminpack-installer'
-version = '1.8'
+version = '1.9-SNAPSHOT'
 targetCompatibility = '1.7'
 sourceCompatibility = '1.7'
 
