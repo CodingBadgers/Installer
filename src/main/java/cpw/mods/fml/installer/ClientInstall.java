@@ -12,6 +12,8 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import org.apache.commons.io.FileUtils;
+
 import argo.format.PrettyJsonFormatter;
 import argo.jdom.JdomParser;
 import argo.jdom.JsonField;
@@ -34,19 +36,22 @@ import cpw.mods.fml.installer.resources.ResourceInfo;
 public class ClientInstall implements ActionType {
 
 	@Override
-	public boolean run(File target) {
-		if (!target.exists()) {
-			displayError("There is no minecraft installation at this location! (" + target.getAbsolutePath() + ")");
+	public boolean run(File launcherdir) {
+		File gamedir = new File(launcherdir.getParentFile(), "." + VersionInfo.getProfileName().toLowerCase());
+		
+		if (!launcherdir.exists()) {
+			displayError("There is no minecraft installation at this location! (" + launcherdir.getAbsolutePath() + ")\nHave you run the minecraft installer atleast once?");
 			return false;
 		}
 		
-		File launcherProfiles = new File(target, "launcher_profiles.json");
+		// load data for installer
+		File launcherProfiles = new File(launcherdir, "launcher_profiles.json");
 		if (!launcherProfiles.exists()) {
 			displayError("There is no minecraft launcher profile at this location, you need to run the launcher first!");
 			return false;
 		}
 
-		File versionRootDir = new File(target, "versions");
+		File versionRootDir = new File(launcherdir, "versions");
 		File versionTarget = new File(versionRootDir, VersionInfo.getVersionTarget());
 		if (!versionTarget.mkdirs() && !versionTarget.isDirectory()) {
 			if (!versionTarget.delete()) {
@@ -56,6 +61,7 @@ public class ClientInstall implements ActionType {
 			}
 		}
 
+		// Write version data file
 		File versionJsonFile = new File(versionTarget, VersionInfo.getVersionTarget() + ".json");
 		File clientJarFile = new File(versionTarget, VersionInfo.getVersionTarget() + ".jar");
 		File minecraftJarFile = VersionInfo.getMinecraftFile(versionRootDir);
@@ -87,12 +93,34 @@ public class ClientInstall implements ActionType {
 			displayError("There was a problem writing the launcher version data,  is it write protected?");
 			return false;
 		}
+		
+		// Copy settings files to new game dir
+		File serversData = new File(launcherdir, "servers.dat");
+		
+		if (serversData.exists()) {
+			try {
+				File serversNewData = new File(gamedir, "servers.dat");
+				FileUtils.copyFile(serversData, serversNewData);
+			} catch (IOException e) {
+				displayError("Error copying server dat file to game dir (" + e.getMessage() + ")");
+			}
+		}
 
+		File optionsData = new File(launcherdir, "options.txt");
+		
+		if (serversData.exists()) {
+			try {
+				File optionsNewData = new File(gamedir, "options.txt");
+				FileUtils.copyFile(optionsData, optionsNewData);
+			} catch (IOException e) {
+				displayError("Error copying options file to game dir (" + e.getMessage() + ")");
+			}
+		}
 		try {
 			//clear mods directory
 			List<ResourceInfo> resources = VersionInfo.getResources();
 			
-			File modsFolder = new File(target, "mods");
+			File modsFolder = new File(gamedir, "mods");
 
 			if (!modsFolder.exists()) {
 				modsFolder.mkdir();
@@ -121,17 +149,17 @@ public class ClientInstall implements ActionType {
 			int i = 1;
 
 			for (ResourceInfo mod : resources) {
-				DownloadFile download = mod.createDownload(target, monitor);
+				DownloadFile download = mod.createDownload(gamedir, monitor);
 				
 				if (download == null) {
 					displayError("There was a error setting up the download for " + mod.getModName() + " skipping download.");
 					continue;
 				}
-				
+								
 				totalCount += download.getFileSize();
 				downloads.add(download);
 				
-				for (DownloadFile info : mod.createConfigDownloads(target, monitor)) {
+				for (DownloadFile info : mod.createConfigDownloads(gamedir, monitor)) {
 					totalCount += info.getFileSize();
 					downloads.add(info);
 				}
@@ -168,7 +196,13 @@ public class ClientInstall implements ActionType {
 			throw Throwables.propagate(e);
 		}
 
-		JsonField[] fields = new JsonField[] { field("name", string(VersionInfo.getProfileName())), field("lastVersionId", string(VersionInfo.getVersionTarget())), field("launcherVisibilityOnGameClose", string("keep the launcher open")), field("javaArgs", string("-Xmx1G -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true")), };
+		JsonField[] fields = new JsonField[] { 
+				field("name", string(VersionInfo.getProfileName())), 
+				field("lastVersionId", string(VersionInfo.getVersionTarget())), 
+				field("launcherVisibilityOnGameClose", string("keep the launcher open")), 
+				field("javaArgs", string("-Xmx1G -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true")),
+				field("gameDir", string(gamedir.getAbsolutePath())),
+		};
 
 		if (ProfileInfo.getCurrent() != null) {
 			fields = Arrays.copyOf(fields, 5);

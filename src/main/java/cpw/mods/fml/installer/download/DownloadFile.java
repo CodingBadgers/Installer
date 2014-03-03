@@ -35,6 +35,14 @@ public class DownloadFile {
 		this.setup();
 	}
 	
+	public File getDestination() {
+		return dest;
+	}
+	
+	public URL getTargetUrl() {
+		return url;
+	}
+	
 	public void setup() {
     	try {
 			connection = url.openConnection();

@@ -5,6 +5,7 @@ import java.io.File;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 
+import cpw.mods.fml.installer.SimpleInstaller;
 import cpw.mods.fml.installer.resources.ResourceInfo;
 
 
@@ -18,7 +19,7 @@ public class LibraryInstaller extends ResourceInstallMethod {
 	public File getDownload(File targetDir) {
 		String path = mod.getModArtifactId();
 		String[] split = Iterables.toArray(Splitter.on(':').omitEmptyStrings().split(path), String.class);
-		File dest = new File(targetDir, "libraries");
+		File dest = new File(SimpleInstaller.installdir, "libraries");
 		Iterable<String> subSplit = Splitter.on('.').omitEmptyStrings().split(split[0]);
 		for (String part : subSplit) {
 			dest = new File(dest, part);

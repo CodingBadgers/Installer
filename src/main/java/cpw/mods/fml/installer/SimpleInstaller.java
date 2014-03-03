@@ -136,7 +136,6 @@ public class SimpleInstaller implements Launcher {
 	}
 
 	private static void launchGui() {
-		File targetDir = null;
 		
 		if (installdir == null) {
 			String userHomeDir = System.getProperty("user.home", ".");
@@ -144,14 +143,12 @@ public class SimpleInstaller implements Launcher {
 			String mcDir = ".minecraft";
 			
 			if (osType.contains("win") && System.getenv("APPDATA") != null) {
-				targetDir = new File(System.getenv("APPDATA"), mcDir);
+				installdir = new File(System.getenv("APPDATA"), mcDir);
 			} else if (osType.contains("mac")) {
-				targetDir = new File(new File(new File(userHomeDir, "Library"), "Application Support"), "minecraft");
+				installdir = new File(new File(new File(userHomeDir, "Library"), "Application Support"), "minecraft");
 			} else {
-				targetDir = new File(userHomeDir, mcDir);
+				installdir = new File(userHomeDir, mcDir);
 			}
-		} else {
-			targetDir = installdir;
 		}
 
 		try {
@@ -169,7 +166,7 @@ public class SimpleInstaller implements Launcher {
 		} catch (Exception e) {
 		}
 
-		InstallerPanel panel = new InstallerPanel(targetDir);
+		InstallerPanel panel = new InstallerPanel(installdir);
 		panel.run();
 	}
 
