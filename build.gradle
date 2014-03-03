@@ -26,7 +26,7 @@ repositories {
 
 group = 'uk.thecodingbadgers'
 archivesBaseName = 'adminpack-installer'
-version = '1.9-SNAPSHOT'
+version = '1.8.1-SNAPSHOT'
 targetCompatibility = '1.7'
 sourceCompatibility = '1.7'
 
@@ -47,7 +47,10 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 
 task fatJar(type: Jar, dependsOn: jar) {
     from(configurations.compile.collect { zipTree(it).matching { include '**/*.class' } })
-    manifest { attributes 'Main-Class': 'cpw.mods.fml.installer.SimpleInstaller' }
+    manifest { 
+		attributes 'Main-Class': 'cpw.mods.fml.installer.SimpleInstaller'
+		attributes 'Version': "${version}"
+	}
 }
 
 fatJar.doFirst {
@@ -57,7 +60,7 @@ fatJar.doFirst {
 task shrinkJar(type: proguard.gradle.ProGuardTask, dependsOn: jar) {
     ext {
         outDir = file("${buildDir}/proguard")
-        obfuscatedJar = "${outDir}/${jar.baseName}.jar"
+        obfuscatedJar = "${outDir}/${jar.baseName}-${jar.version}.jar"
     }
     outDir.mkdirs()
     
@@ -70,7 +73,10 @@ task shrinkJar(type: proguard.gradle.ProGuardTask, dependsOn: jar) {
 task shrinkOutput(type: Jar, dependsOn: shrinkJar) {
     classifier = 'shrunk'
     from zipTree(shrinkJar.obfuscatedJar)
-    manifest { attributes 'Main-Class': 'cpw.mods.fml.installer.SimpleInstaller' }
+    manifest { 
+		attributes 'Main-Class': 'cpw.mods.fml.installer.SimpleInstaller'
+		attributes 'Version': "${version}"
+	}
 }
 
 artifacts {
@@ -82,7 +88,10 @@ artifacts {
 jar {
     classifier = 'thin'
     exclude 'argo/**'
-    manifest { attributes 'Main-Class': 'cpw.mods.fml.installer.SimpleInstaller' }
+    manifest { 
+		attributes 'Main-Class': 'cpw.mods.fml.installer.SimpleInstaller'
+		attributes 'Version': "${version}"
+	}
 }
 
 uploadArchives {

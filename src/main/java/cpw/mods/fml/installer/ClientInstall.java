@@ -196,17 +196,17 @@ public class ClientInstall implements ActionType {
 			throw Throwables.propagate(e);
 		}
 
-		JsonField[] fields = new JsonField[] { 
+		JsonField[] fields = new JsonField[] {
+				field("playerUUID", string("DUMMY-UUID")),
 				field("name", string(VersionInfo.getProfileName())), 
 				field("lastVersionId", string(VersionInfo.getVersionTarget())), 
 				field("launcherVisibilityOnGameClose", string("keep the launcher open")), 
 				field("javaArgs", string("-Xmx1G -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true")),
-				field("gameDir", string(gamedir.getAbsolutePath())),
+				field("gameDir", string(gamedir.getAbsolutePath()))
 		};
 
 		if (ProfileInfo.getCurrent() != null) {
-			fields = Arrays.copyOf(fields, 5);
-			fields[4] = field("playerUUID", string(ProfileInfo.getCurrent().getUUID()));
+			fields[0] = field("playerUUID", string(ProfileInfo.getCurrent().getUUID()));
 		}
 
 		HashMap<JsonStringNode, JsonNode> profileCopy = Maps.newHashMap(jsonProfileData.getNode("profiles").getFields());
