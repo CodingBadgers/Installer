@@ -21,7 +21,7 @@ public class ResourceInfo {
 	private URL modDownload;
 	private FileType filetype;
 	private InstallMethod installMethod;
-	private ConfigInfo[] configs;
+	private ConfigInfo[] configs = new ConfigInfo[0];
 	
 	public ResourceInfo(JsonNode mod) {
 		try {
@@ -96,15 +96,11 @@ public class ResourceInfo {
 	}
 	
 	public DownloadFile[] createConfigDownloads(File dir, IMonitor monitor) {
-		if (configs != null && configs.length > 0) {
-			DownloadFile[] downloads = new DownloadFile[configs.length];
-			int i = 0;
-			for (ConfigInfo info : configs) {
-				downloads[i++] = info.createDownload(dir, monitor);
-			}
-			return downloads;
-		} else {
-			return new DownloadFile[0];
+		DownloadFile[] downloads = new DownloadFile[configs.length];
+		int i = 0;
+		for (ConfigInfo info : configs) {
+			downloads[i++] = info.createDownload(dir, monitor);
 		}
+		return downloads;
 	}
 }
