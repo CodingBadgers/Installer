@@ -93,28 +93,23 @@ public class ClientInstall implements ActionType {
 			return false;
 		}
 		
-		// Copy settings files to new game dir
-		File serversData = new File(launcherdir, "servers.dat");
+		// Copy special files to new gamedir
+		File[] dataFiles = new File[] {
+			new File(launcherdir, "servers.dat"),
+			new File(launcherdir, "options.txt")
+		};
 		
-		if (serversData.exists()) {
-			try {
-				File serversNewData = new File(gamedir, "servers.dat");
-				FileUtils.copyFile(serversData, serversNewData);
-			} catch (IOException e) {
-				displayError("Error copying server dat file to game dir (" + e.getMessage() + ")");
+		for (File dataFile : dataFiles) {
+			if (dataFile.exists()) {
+				try {
+					File newData = new File(gamedir, dataFile.getName());
+					FileUtils.copyFile(dataFile, newData);
+				} catch (IOException e) {
+					displayError("Error copying data file to game dir (" + e.getMessage() + ")");
+				}
 			}
 		}
-
-		File optionsData = new File(launcherdir, "options.txt");
 		
-		if (serversData.exists()) {
-			try {
-				File optionsNewData = new File(gamedir, "options.txt");
-				FileUtils.copyFile(optionsData, optionsNewData);
-			} catch (IOException e) {
-				displayError("Error copying options file to game dir (" + e.getMessage() + ")");
-			}
-		}
 		try {
 			//clear mods directory
 			List<ResourceInfo> resources = VersionInfo.getResources();
@@ -139,7 +134,7 @@ public class ClientInstall implements ActionType {
 				}
 			}
 
-			// Download accompanying mods
+			// Download accompanying resources
 			List<DownloadFile> downloads = new ArrayList<>();
 
 			IMonitor monitor = DownloadUtils.buildMonitor();
