@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,14 +26,16 @@ import com.google.common.io.Files;
 
 import cpw.mods.fml.installer.mirror.MirrorData;
 import cpw.mods.fml.installer.resources.ResourceInfo;
+import static cpw.mods.fml.installer.ErrorCodes.*;
 
 public class VersionInfo {
-	public static final int VERSION = 5;
+	public static final int VERSION = 6;
 	public static final VersionInfo INSTANCE = new VersionInfo();
 	
 	private static String forgeVersion;
 	private static String minecraftVersion;
 	private static String versionTarget;
+	private static String packVersion;
 	
 	private JsonRootNode versionData;
 	private MirrorData mirrorData;
@@ -40,40 +43,43 @@ public class VersionInfo {
 	public VersionInfo() {
 		try {
 			versionData = parseStream(SimpleInstaller.profileFileLocation.openStream());
-
-			int remoteVersion = Integer.parseInt(versionData.getNumberValue("version"));
-			
-			if (remoteVersion < VERSION) {
-				SimpleInstaller.displayMessage("The profile file you are using is out of date\nplease specify a more uptodate file", "Out of Date");
-				System.exit(1);
-			} else if (remoteVersion > VERSION) {
-				SimpleInstaller.displayMessage("The installer you are using is out of date\nplease update your installer.", "Out of Date");
-				if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Action.BROWSE)) {
-					Desktop.getDesktop().browse(new URI("http://mcbadgercraft.com/adminpack/installer"));
-				}
-				System.exit(2);
-			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			SimpleInstaller.displayMessage("Error loading version data", "Error loading data");
-			System.exit(3);
+			System.exit(VERSION_DATA_EXCEPTION.ordinal());
 		}
 		
 		try {
-			mirrorData = new MirrorData("http://files.minecraftforge.net/mirror-brand.list");
+			mirrorData = new MirrorData(getMirrorList0());
 		} catch (Exception e) {
-			SimpleInstaller.displayMessage("Error loading mirror data", "Error loading data");
 			e.printStackTrace();
-			System.exit(4);
+			SimpleInstaller.displayMessage("Error loading mirror data", "Error loading data");
+			System.exit(MIRROR_DATA_EXCEPTION.ordinal());
 		}
 	}
 
-	private JsonRootNode parseStream(InputStream openStream) throws IOException, InvalidSyntaxException {
+	private JsonRootNode parseStream(InputStream openStream) throws IOException, InvalidSyntaxException, URISyntaxException {
 		JdomParser parser = new JdomParser();
 		
 		List<String> lines = IOUtils.readLines(openStream);
 		JsonRootNode root = parser.parse(StringUtils.join(lines, ' '));
-		minecraftVersion = replaceMacros(root.getStringValue("install", "minecraftVersion"));
-		forgeVersion = replaceMacros(root.getStringValue("install", "forgeVersion"));
+
+		int remoteVersion = Integer.parseInt(root.getNumberValue("version"));
+		
+		if (remoteVersion < VERSION) {
+			SimpleInstaller.displayMessage("The profile file you are using is out of date\nplease specify a more uptodate file", "Out of Date");
+			System.exit(REMOTE_OUT_OF_DATE.ordinal());
+		} else if (remoteVersion > VERSION) {
+			SimpleInstaller.displayMessage("The installer you are using is out of date\nplease update your installer.", "Out of Date");
+			if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Action.BROWSE)) {
+				Desktop.getDesktop().browse(new URI("http://mcbadgercraft.com/adminpack/installer"));
+			}
+			System.exit(CLIENT_OUT_OF_DATE.ordinal());
+		}
+		
+		minecraftVersion = replaceMacros(root.getStringValue("install", "version", "minecraft"));
+		forgeVersion = replaceMacros(root.getStringValue("install", "version", "forge"));
+		packVersion = replaceMacros(root.getStringValue("install", "version", "pack"));
 		versionTarget = replaceMacros(root.getStringValue("install", "target"));
 		
 		List<String> parsedLines = new ArrayList<String>();
@@ -87,6 +93,7 @@ public class VersionInfo {
 	private static String replaceMacros(String input) {
 		if (getMinecraftVersion() != null) input = input.replace("${minecraft_version}", getMinecraftVersion());
 		if (getForgeVersion() != null) input = input.replace("${forge_version}", getForgeVersion());
+		if (getPackVersion() != null) input = input.replace("${pack_version}", getPackVersion());
 		if (getVersionTarget() != null) input = input.replace("${target}", getVersionTarget());
 		return input;
 	}
@@ -114,6 +121,14 @@ public class VersionInfo {
 	public static JsonNode getVersionInfo() {
 		return INSTANCE.versionData.getNode("versionInfo");
 	}
+	
+	public static String getMirrorList() {
+		return INSTANCE.getMirrorList0();
+	}
+	
+	private String getMirrorList0() {
+		return versionData.getStringValue("install", "mirrorlist");
+	}
 
 	private static String getForgeVersion() {
 		return forgeVersion;
@@ -121,6 +136,10 @@ public class VersionInfo {
 
 	public static String getMinecraftVersion() {
 		return minecraftVersion;
+	}
+
+	public static String getPackVersion() {
+		return packVersion;
 	}
 
 	public static String getVersionTarget() {

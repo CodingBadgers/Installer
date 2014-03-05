@@ -7,3 +7,4 @@ build/
 .settings/
 /repo
 .mcbadgerpack-1.7.2
+**.orig
