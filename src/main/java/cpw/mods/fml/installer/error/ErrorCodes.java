@@ -1,4 +1,4 @@
-package cpw.mods.fml.installer;
+package cpw.mods.fml.installer.error;
 
 public enum ErrorCodes {
 	

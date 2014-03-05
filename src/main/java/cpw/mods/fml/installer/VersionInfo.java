@@ -26,7 +26,7 @@ import com.google.common.io.Files;
 
 import cpw.mods.fml.installer.mirror.MirrorData;
 import cpw.mods.fml.installer.resources.ResourceInfo;
-import static cpw.mods.fml.installer.ErrorCodes.*;
+import static cpw.mods.fml.installer.error.ErrorCodes.*;
 
 public class VersionInfo {
 	public static final int VERSION = 6;
