@@ -1,32 +1,39 @@
 package cpw.mods.fml.installer;
 
-import java.awt.Color;
+import java.awt.Desktop;
+import java.awt.EventQueue;
 import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 
 import javax.imageio.ImageIO;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Throwables;
 
+import cpw.mods.fml.installer.mirror.Mirror;
+
 @SuppressWarnings("serial")
 public class InstallerPanel extends JPanel {
 	
-	private JLabel infoLabel;
 	private JDialog dialog;
-	private JPanel fileEntryPanel;
+	private JButton sponsorButton;
+	private JPanel sponsorPanel;
 	private JComboBox<ProfileInfo> profileChooser;
 
 	public InstallerPanel(File targetDir) {
@@ -38,6 +45,7 @@ public class InstallerPanel extends JPanel {
 			throw Throwables.propagate(e);
 		}
 
+		JLabel spacer = new JLabel(" ");
 		JPanel logoSplash = new JPanel();
 		logoSplash.setLayout(new BoxLayout(logoSplash, BoxLayout.Y_AXIS));
 		
@@ -57,12 +65,61 @@ public class InstallerPanel extends JPanel {
 			logoSplash.add(tag);
 		}
 		
+		
 		logoSplash.setAlignmentX(CENTER_ALIGNMENT);
 		logoSplash.setAlignmentY(TOP_ALIGNMENT);
 		this.add(logoSplash);
+
+        sponsorPanel = new JPanel();
+        sponsorPanel.setLayout(new BoxLayout(sponsorPanel, BoxLayout.X_AXIS));
+        sponsorPanel.setAlignmentX(CENTER_ALIGNMENT);
+        sponsorPanel.setAlignmentY(CENTER_ALIGNMENT);
+
+        sponsorButton = new JButton();
+        sponsorButton.setAlignmentX(CENTER_ALIGNMENT);
+        sponsorButton.setAlignmentY(CENTER_ALIGNMENT);
+        sponsorButton.setBorderPainted(false);
+        sponsorButton.setOpaque(false);
+        sponsorButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                try
+                {
+                    Desktop.getDesktop().browse(new URI(sponsorButton.getToolTipText()));
+                    EventQueue.invokeLater(new Runnable() {
+                        @Override
+                        public void run()
+                        {
+                            InstallerPanel.this.dialog.toFront();
+                            InstallerPanel.this.dialog.requestFocus();
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    JOptionPane.showMessageDialog(InstallerPanel.this, "An error occurred launching the browser", "Error launching browser", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        sponsorPanel.add(sponsorButton);
+
+        this.add(sponsorPanel);
 		
 		JPanel profilePanel = new JPanel();
+		profilePanel.setAlignmentX(CENTER_ALIGNMENT);
+		profilePanel.setAlignmentY(CENTER_ALIGNMENT);
+        profilePanel.setOpaque(false);
 		profilePanel.setLayout(new BoxLayout(profilePanel, BoxLayout.Y_AXIS));
+
+		profilePanel.add(spacer);
+		
+		JLabel profileLabel = new JLabel("Active Profile:");
+		profileLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+		profileLabel.setAlignmentX(LEFT_ALIGNMENT);
+		profileLabel.setAlignmentY(CENTER_ALIGNMENT);
+		profilePanel.add(profileLabel);
+		
 		profileChooser = new JComboBox<ProfileInfo>();
 		for (ProfileInfo info : VersionInfo.getAccounts(targetDir)) {
 			profileChooser.addItem(info);
@@ -77,25 +134,33 @@ public class InstallerPanel extends JPanel {
 			}		
 		});
 		profilePanel.add(profileChooser);
-		profilePanel.setAlignmentX(CENTER_ALIGNMENT);
-		profilePanel.setAlignmentY(TOP_ALIGNMENT);
+		
 		this.add(profilePanel);
 		
-		infoLabel = new JLabel();
-		infoLabel.setHorizontalTextPosition(JLabel.LEFT);
-		infoLabel.setVerticalTextPosition(JLabel.TOP);
-		infoLabel.setAlignmentX(LEFT_ALIGNMENT);
-		infoLabel.setAlignmentY(TOP_ALIGNMENT);
-		infoLabel.setForeground(Color.RED);
-		infoLabel.setVisible(false);
-
-		fileEntryPanel = new JPanel();
-		fileEntryPanel.setLayout(new BoxLayout(fileEntryPanel, BoxLayout.Y_AXIS));
-		fileEntryPanel.add(infoLabel);
-		fileEntryPanel.add(Box.createVerticalGlue());
-		fileEntryPanel.setAlignmentX(CENTER_ALIGNMENT);
-		fileEntryPanel.setAlignmentY(TOP_ALIGNMENT);
-		this.add(fileEntryPanel);
+		updateSponsorDetails();
+	}
+	
+	private void updateSponsorDetails() {
+		Mirror mirror = VersionInfo.getMirrorData().getMirror();
+		String sponsorMessage = mirror.getSponsorMessage();
+        if (sponsorMessage != null)
+        {
+            sponsorButton.setText(sponsorMessage);
+            sponsorButton.setToolTipText(mirror.getHomepage().toString());
+            if (mirror.getLogo() != null)
+            {
+                sponsorButton.setIcon(mirror.getLogo());
+            }
+            else
+            {
+                sponsorButton.setIcon(null);
+            }
+            sponsorPanel.setVisible(true);
+        }
+        else
+        {
+            sponsorPanel.setVisible(false);
+        }
 	}
 
 

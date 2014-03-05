@@ -23,16 +23,19 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Throwables;
 import com.google.common.io.Files;
 
+import cpw.mods.fml.installer.mirror.MirrorData;
 import cpw.mods.fml.installer.resources.ResourceInfo;
 
 public class VersionInfo {
 	public static final int VERSION = 5;
 	public static final VersionInfo INSTANCE = new VersionInfo();
+	
 	private static String forgeVersion;
 	private static String minecraftVersion;
 	private static String versionTarget;
 	
 	private JsonRootNode versionData;
+	private MirrorData mirrorData;
 
 	public VersionInfo() {
 		try {
@@ -53,6 +56,14 @@ public class VersionInfo {
 		} catch (Exception e) {
 			SimpleInstaller.displayMessage("Error loading version data", "Error loading data");
 			System.exit(3);
+		}
+		
+		try {
+			mirrorData = new MirrorData("http://files.minecraftforge.net/mirror-brand.list");
+		} catch (Exception e) {
+			SimpleInstaller.displayMessage("Error loading mirror data", "Error loading data");
+			e.printStackTrace();
+			System.exit(4);
 		}
 	}
 
@@ -156,6 +167,10 @@ public class VersionInfo {
 		}
 
 		return modData;
+	}
+
+	public static MirrorData getMirrorData() {
+		return INSTANCE.mirrorData;
 	}
 	
 }

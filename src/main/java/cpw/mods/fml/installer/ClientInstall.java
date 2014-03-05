@@ -27,7 +27,9 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 
+import cpw.mods.fml.installer.download.Download;
 import cpw.mods.fml.installer.download.DownloadFile;
+import cpw.mods.fml.installer.download.DownloadLibrary;
 import cpw.mods.fml.installer.download.DownloadMinecraftJar;
 import cpw.mods.fml.installer.download.DownloadUtils;
 import cpw.mods.fml.installer.resources.ResourceInfo;
@@ -68,7 +70,8 @@ public class ClientInstall implements ActionType {
 		if (!minecraftJarFile.exists()) {
 			try {
 				DownloadMinecraftJar download = new DownloadMinecraftJar(VersionInfo.getMinecraftVersion(), clientJarFile);
-				download.run(DownloadUtils.buildMonitor(), 0);
+				download.download(DownloadUtils.buildMonitor(), 0);
+				download.close();
 			} catch (IOException e) {
 				displayError("Error downloading minecraft jar from mojang repository (" + e.getMessage() + ")");
 				return false;
@@ -135,7 +138,7 @@ public class ClientInstall implements ActionType {
 			}
 
 			// Download accompanying resources
-			List<DownloadFile> downloads = new ArrayList<>();
+			List<Download> downloads = new ArrayList<>();
 
 			IMonitor monitor = DownloadUtils.buildMonitor();
 			monitor.setMaximum(resources.size() + 1);
@@ -160,12 +163,30 @@ public class ClientInstall implements ActionType {
 				
 				monitor.setProgress(i++);
 			}
+			
+			for (JsonNode library : VersionInfo.getVersionInfo().getArrayNode("libraries")) {
+				downloads.add(new DownloadLibrary(library));
+			}
 
 			monitor.setMaximum(totalCount);
 			int count = 0;
+			
+			/*
+			 * Setup
+			 * Download
+			 * Close
+			 */
+			
+			for (Download download : downloads) {
+				download.setup();
+			}
 
-			for (DownloadFile download : downloads) {
-				count = download.run(monitor, count);
+			for (Download download : downloads) {
+				count = download.download(monitor, count);
+			}
+			
+			for (Download download : downloads) {
+				download.close();
 			}
 
 			monitor.setProgress(monitor.getMaximum());
