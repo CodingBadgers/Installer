@@ -5,7 +5,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,9 +26,9 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 
-import cpw.mods.fml.installer.download.Download;
 import cpw.mods.fml.installer.download.DownloadFile;
 import cpw.mods.fml.installer.download.DownloadLibrary;
+import cpw.mods.fml.installer.download.DownloadList;
 import cpw.mods.fml.installer.download.DownloadMinecraftJar;
 import cpw.mods.fml.installer.download.DownloadUtils;
 import cpw.mods.fml.installer.resources.ResourceInfo;
@@ -140,7 +139,7 @@ public class ClientInstall implements ActionType {
 			}
 
 			// Download accompanying resources
-			List<Download> downloads = new ArrayList<>();
+			DownloadList downloads = new DownloadList();
 
 			IMonitor monitor = DownloadUtils.buildMonitor();
 			monitor.setMaximum(resources.size() + 1);
@@ -170,27 +169,12 @@ public class ClientInstall implements ActionType {
 				downloads.add(new DownloadLibrary(library));
 			}
 
-			monitor.setMaximum(totalCount);
-			int count = 0;
+			monitor.setMaximum(totalCount + 1);
 			
-			/*
-			 * Setup
-			 * Download
-			 * Close
-			 */
+			downloads.setup();
+			downloads.download(monitor);
+			downloads.close();
 			
-			for (Download download : downloads) {
-				download.setup();
-			}
-
-			for (Download download : downloads) {
-				count = download.download(monitor, count);
-			}
-			
-			for (Download download : downloads) {
-				download.close();
-			}
-
 			monitor.setProgress(monitor.getMaximum());
 
 		} catch (Exception e) {
