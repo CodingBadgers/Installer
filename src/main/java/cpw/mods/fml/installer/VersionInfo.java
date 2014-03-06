@@ -122,6 +122,10 @@ public class VersionInfo {
 		return INSTANCE.versionData.getNode("versionInfo");
 	}
 	
+	public static JsonNode getGamedirInfo() {
+		return INSTANCE.versionData.getNode("gamedir");
+	}
+	
 	public static String getMirrorList() {
 		return INSTANCE.getMirrorList0();
 	}

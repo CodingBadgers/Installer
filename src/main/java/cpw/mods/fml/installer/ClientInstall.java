@@ -38,7 +38,7 @@ public class ClientInstall implements ActionType {
 
 	@Override
 	public boolean run(File launcherdir) {
-		File gamedir = new File(launcherdir.getParentFile(), "." + VersionInfo.getProfileName().toLowerCase());
+		File gamedir = new File(launcherdir.getParentFile(), "." + VersionInfo.getGamedirInfo().getStringValue("name").toLowerCase());
 		
 		if (!launcherdir.exists()) {
 			displayError("There is no minecraft installation at this location! (" + launcherdir.getAbsolutePath() + ")\nHave you run the minecraft installer atleast once?");
@@ -96,16 +96,18 @@ public class ClientInstall implements ActionType {
 			return false;
 		}
 		
-		// Copy special files to new gamedir
-		File[] dataFiles = new File[] {
-			new File(launcherdir, "servers.dat"),
-			new File(launcherdir, "options.txt")
-		};
-		
-		for (File dataFile : dataFiles) {
+		for (JsonNode json : VersionInfo.getGamedirInfo().getArrayNode("copy")) {
+			File dataFile = new File(launcherdir, json.getStringValue("old"));
+			
 			if (dataFile.exists()) {
 				try {
-					File newData = new File(gamedir, dataFile.getName());
+					String name = dataFile.getName();
+					
+					if (json.isStringValue("rename")) {
+						name = json.getStringValue("rename");
+					}
+					
+					File newData = new File(gamedir, name);
 					FileUtils.copyFile(dataFile, newData);
 				} catch (IOException e) {
 					displayError("Error copying data file to game dir (" + e.getMessage() + ")");
@@ -246,7 +248,7 @@ public class ClientInstall implements ActionType {
 
 		return true;
 	}
-
+	
 	private void displayError(String error) {
 		if (SimpleInstaller.headless) {
 			System.err.println(error);
