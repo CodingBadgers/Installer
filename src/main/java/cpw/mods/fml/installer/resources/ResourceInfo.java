@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 
@@ -15,22 +17,36 @@ import argo.jdom.JsonNode;
 
 public class ResourceInfo {
 
-	private String modName;
-	private String modVersion;
-	private String modArtifactId;
-	private URL modDownload;
+	private static final Pattern ARTIFACT_PATTERN = Pattern.compile("([\\w\\.]+):([\\w]+):([\\w-\\.]+)");
+	
+	private String name;
+	private String version;
+	private String group;
+	
+	private String artifactId;
+	private URL download;
 	private FileType filetype;
 	private InstallMethod installMethod;
+	
 	private ConfigInfo[] configs = new ConfigInfo[0];
+
 	
 	public ResourceInfo(JsonNode mod) {
 		try {
-			modName = mod.getStringValue("name");
-			modVersion = mod.getStringValue("version");
-			modArtifactId = mod.getStringValue("artifactId");
-			modDownload = new URL(mod.getStringValue("url"));
+			artifactId = mod.getStringValue("artifactId");
+			download = new URL(mod.getStringValue("url"));
 			filetype = FileType.valueOf(mod.getStringValue("filetype"));
 			installMethod = InstallMethod.valueOf(mod.getStringValue("installMethod"));
+
+			Matcher regex = ARTIFACT_PATTERN.matcher(artifactId);
+			
+			if (!regex.matches()) {
+				throw new Exception("Artifact pattern is not in the correct format");
+			}
+			
+			group = regex.group(1);
+			name = regex.group(2);
+			version = regex.group(3);
 			
 			if (mod.isArrayNode("config")) {
 				List<JsonNode> json = mod.getArrayNode("config");
@@ -44,25 +60,29 @@ public class ResourceInfo {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, "There was a error reading the mod information", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "There was a error reading the mod information" + (artifactId != null ? " " + artifactId : ""), "Error", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 	}
 	
 	public String getModName() {
-		return modName;
+		return name;
 	}
 	
 	public String getModVersion() {
-		return modVersion;
+		return version;
+	}
+	
+	public String getGroupId() {
+		return group;
 	}
 	
 	public String getModArtifactId() {
-		return modArtifactId;
+		return artifactId;
 	}
 	
 	public URL getModDownload() {
-		return modDownload;
+		return download;
 	}
 
 	public String getModFileName() {
@@ -92,7 +112,7 @@ public class ResourceInfo {
 			return null;
 		}
 		
-		return new DownloadFile(modDownload, target);
+		return new DownloadFile(download, target);
 	}
 	
 	public DownloadFile[] createConfigDownloads(File dir, IMonitor monitor) {
